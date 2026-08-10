@@ -479,8 +479,8 @@
         </div>
 
         <div class="hero-actions-clean">
-          <a class="hero-btn primary" href="static/pdfs/AssembledHOI_ECCV26.pdf" target="_blank" rel="noopener">Paper</a>
-          <a class="hero-btn" href="static/pdfs/AssembledHOI_Supply_ECCV26.pdf" target="_blank" rel="noopener">Supplementary</a>
+          <a class="hero-btn primary" href="static/pdfs/AssembledHOI_ECCV26_Workshop.pdf" target="_blank" rel="noopener">Paper</a>
+          <a class="hero-btn" href="static/pdfs/AssembledHOI_Supply_ECCV26_Workshop.pdf" target="_blank" rel="noopener">Supplementary</a>
           <a class="hero-btn" href="https://github.com/DONGHONGYONG/AssembledHOI" target="_blank" rel="noopener">Code</a>
           <a class="hero-btn" href="#citation">BibTeX</a>
         </div>
@@ -513,7 +513,7 @@
             <div class="pdf-loading">Loading the framework PDF…</div>
           </div>
           <figcaption class="figure-caption">
-            <strong>Fig. 2: Overall framework of AssembledHOI.</strong> Firstly, we utilize both of text-to-motion model and text-to-3D model to generate the initialized point clouds. After executing dense geometry sampling on the point clouds, we use GPT-4V to obtain the set of key parts of the interaction via the text prompt. Then we conduct positional optimization of the corresponding interaction by applying local refinement to the involved body parts. Finally, we further incorporate multiple viewpoints, including close-up renderings, and apply the SDS method to optimize key parts, thereby enhancing texture fidelity and detail. As illustrated in the figure, although satisfactory results can be achieved at 2000th step, the synthesis output (at 2400th step) attains optimal performance under part-guided optimization.
+            <strong>Overall framework of AssembledHOI.</strong> Firstly, we utilize both of text-to-motion model and text-to-3D model to generate the initialized point clouds. After executing dense geometry sampling on the point clouds, we use GPT-4V to obtain the set of key parts of the interaction via the text prompt. Then we conduct positional optimization of the corresponding interaction by applying local refinement to the involved body parts. Finally, we further incorporate multiple viewpoints, including close-up renderings, and apply the SDS method to optimize key parts, thereby enhancing texture fidelity and detail. As illustrated in the figure, although satisfactory results can be achieved at 2000th step, the synthesis output (at 2400th step) attains optimal performance under part-guided optimization.
           </figcaption>
         </figure>
       </div>
@@ -526,7 +526,7 @@
     <section id="results" class="page-section">
       <div class="page-container">
         <h2 class="section-title">Results</h2>
-        <p class="section-intro">All videos are shown directly in a fixed grid. Their temporary captions are generated from the video filenames and can be replaced later with the final text prompts.</p>
+        <!-- <p class="section-intro">All videos are shown directly in a fixed grid. Their temporary captions are generated from the video filenames and can be replaced later with the final text prompts.</p> -->
 
         <div class="video-grid" id="videoGrid">
           <div class="video-status">Loading videos…</div>
@@ -539,7 +539,7 @@
          ============================================================ -->
     <section id="comparison" class="page-section">
       <div class="page-container">
-        <h2 class="section-title">Comparison</h2>
+        <h2 class="section-title">Quantitative Comparison</h2>
 
         <div class="metric-table-wrap">
           <table class="metric-table">
@@ -566,20 +566,20 @@
         </div>
 
         <div class="comparison-block">
-          <h3 class="comparison-subtitle">Qualitative Comparison in the Main Paper</h3>
+          <h3 class="comparison-subtitle">Qualitative Comparison</h3>
           <div id="mainComparisonFigures"></div>
           <p class="comparison-copy">
             When given complex human-object interaction prompts, such as “a man in a hoodie, camouflage jacket, joggers and trainers carrying a backpack”, methods like DreamFusion, Magic3D and TextMesh produced results with insufficient physical plausibility, exhibiting noticeable structural distortions. Although InterFusion and InteractAnything generate geometrically coherent human-object interactions, like the others, it suffers from textures that lack richness and visual fidelity compared to our approach. Furthermore, while DreamHOI relies on UV maps to generate diverse styles, our approach eliminates this dependency. In terms of text prompt alignment, our method also demonstrates clear superiority over all six baseline approaches.
           </p>
         </div>
 
-        <div class="comparison-block">
+        <!-- <div class="comparison-block">
           <h3 class="comparison-subtitle">Additional Comparison in the Supplementary Material</h3>
           <div id="suppComparisonFigures"></div>
           <p class="comparison-copy">
             Our approach achieves superior performance compared to the baseline methods in terms of both geometric consistency and texture fidelity. As illustrated in Fig. 2a, more samples generated by our AssembledHOI under diverse prompts demonstrate not only strong alignment with the input prompts, but also high-fidelity details and accurate spatial articulation. Moreover, we have also demonstrated scenarios involving multi-object interaction in Fig. 2b, showcasing the strong compositional generalization ability of our framework.
           </p>
-        </div>
+        </div> -->
       </div>
     </section>
 
@@ -610,14 +610,14 @@
          ============================================================ -->
     <section id="extension" class="page-section">
       <div class="page-container">
-        <h2 class="section-title">Extension and Limitation</h2>
+        <h2 class="section-title">Extension</h2>
 
         <div class="extension-video-grid" id="extensionVideoGrid">
           <div class="video-status">Loading extension videos…</div>
         </div>
 
         <p class="extension-copy">
-          Since the core of our method lies in the assembly of humans and objects, AssembledHOI can be naturally extended to enable zero-shot generation of human-human interactions. Our method achieves generalization by disentangling structural components, e.g. pose from an object, allowing the text-guided assembly of novel interactions among unseen characters. As shown in Fig. 8, we generate scenes of interactions such as “Batman and Iron Man shaking hands” or “Spider-Man and Captain America waving”. These results demonstrate the strong compositional generalization ability of our framework, where new interactions are synthesized by recombining learned components based on text prompts.
+          Since the core of our method lies in the assembly of humans and objects, AssembledHOI can be naturally extended to enable zero-shot generation of human-human interactions. Our method achieves generalization by disentangling structural components, e.g. pose from an object, allowing the text-guided assembly of novel interactions among unseen characters. As shown in above, we generate scenes of interactions such as “Batman and Iron Man shaking hands” or “Spider-Man and Captain America waving”. These results demonstrate the strong compositional generalization ability of our framework, where new interactions are synthesized by recombining learned components based on text prompts.
         </p>
       </div>
     </section>
@@ -633,7 +633,7 @@
           <pre id="bibtex"><code>@inproceedings{dong2026assembledhoi,
   title     = {AssembledHOI: Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors},
   author    = {Dong, Hongyong and Chu, Jiaming and Yao, Fanglong and Fan, Zhaoxin and Zhao, Hao and Wang, Li and Jin, Lei},
-  booktitle = {European Conference on Computer Vision (ECCV) Workshops},
+  booktitle = {European Conference on Computer Vision (ECCV) Workshop},
   year      = {2026}
 }</code></pre>
         </div>
