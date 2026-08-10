@@ -222,48 +222,6 @@
       background: #fafafa;
     }
 
-    /* .pdf-frame {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      border: 1px solid #e6e8ed;
-      border-radius: 10px;
-      background: #fafafa;
-    } */
-
-    /* Height is derived from each PDF page's own aspect ratio in JavaScript.
-       This keeps every figure aligned to the common page width without
-       forcing unrelated PDFs into the same fixed-height box. */
-    /* .pdf-frame {
-      height: auto;
-      min-height: 0;
-      aspect-ratio: var(--pdf-aspect, 16 / 9);
-    } */
-
-    /* .pdf-frame object,
-    .pdf-frame iframe,
-    .pdf-frame embed {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      background: #fff;
-    }
-
-    .pdf-loading,
-    .pdf-missing {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      padding: 28px;
-      text-align: center;
-      color: #8a93a3;
-      font-size: 14px;
-      line-height: 1.6;
-      background: #fafafa;
-    } */
-
     .figure-caption {
       width: 96%;
       margin: 15px auto 0;
@@ -802,43 +760,6 @@
     /* ==============================================================
        PDF rendering
        ============================================================== */
-    // async function getPdfPageAspect(path) {
-    //   /*
-    //    * Read the page box directly from the PDF source.  We keep the PDF
-    //    * embedded as a PDF (no screenshot/canvas conversion), and only use
-    //    * CropBox/MediaBox numbers to determine the correct display height.
-    //    */
-    //   try {
-    //     const response = await fetch(relativeAssetUrl(path), { cache: "force-cache" });
-    //     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    //     const buffer = await response.arrayBuffer();
-    //     const text = new TextDecoder("latin1").decode(buffer);
-    //     const number = "([-+]?\\d*\\.?\\d+)";
-
-    //     // Prefer CropBox when present; otherwise use the PDF page MediaBox.
-    //     for (const box of ["CropBox", "MediaBox", "ArtBox", "TrimBox"]) {
-    //       const re = new RegExp(`/${box}\\s*\\[\\s*${number}\\s+${number}\\s+${number}\\s+${number}\\s*\\]`);
-    //       const match = text.match(re);
-    //       if (!match) continue;
-
-    //       const x1 = Number(match[1]);
-    //       const y1 = Number(match[2]);
-    //       const x2 = Number(match[3]);
-    //       const y2 = Number(match[4]);
-    //       const width = Math.abs(x2 - x1);
-    //       const height = Math.abs(y2 - y1);
-
-    //       if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
-    //         return { width, height };
-    //       }
-    //     }
-    //   } catch (error) {
-    //     console.warn(`Could not read PDF page size for ${path}:`, error);
-    //   }
-    //   return null;
-    // }
-
     async function mountPdf(container, path, frameClass = "comparison") {
       if (!container || !path) return;
       container.innerHTML = `<div class="pdf-loading">Loading the framework PDF…</div>`;
@@ -880,36 +801,6 @@
         console.error(err);
       }
     }
-
-    // async function mountPdf(container, path, frameClass = "comparison") {
-    //   if (!container || !path) return;
-    //   container.innerHTML = "";
-
-    //   // Set the frame height from the PDF's actual page ratio.  Because the
-    //   // width is always 100%, CSS computes height = width × pageHeight/pageWidth.
-    //   const page = await getPdfPageAspect(path);
-    //   if (page) {
-    //     // 宽/高，传给css变量
-    //     container.style.setProperty("--pdf-aspect", `${page.width} / ${page.height}`);
-    //   }else{
-    //     // 获取失败时使用PDF标准A4比例
-    //     container.style.setProperty("--pdf-aspect", "210 / 297");
-    //   }
-    //   // if (page) {
-    //   //   container.style.setProperty("--pdf-aspect", `${page.width} / ${page.height}`);
-    //   // }
-
-    //   const object = document.createElement("object");
-    //   object.type = "application/pdf";
-    //   object.data = `${relativeAssetUrl(path)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
-    //   object.setAttribute("aria-label", path.split("/").pop() || "Research figure PDF");
-
-    //   const fallback = document.createElement("p");
-    //   fallback.className = "pdf-missing";
-    //   fallback.innerHTML = `Your browser cannot display this PDF inline. <a href="${relativeAssetUrl(path)}" target="_blank" rel="noopener">Open the PDF</a>.`;
-    //   object.appendChild(fallback);
-    //   container.appendChild(object);
-    // }
 
     function makePdfFigure(path, caption = "") {
       const figure = document.createElement("figure");
