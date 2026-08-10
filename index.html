@@ -5,39 +5,465 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AssembledHOI | ECCV 2026</title>
   <meta name="description" content="AssembledHOI: Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors." />
-  <meta name="theme-color" content="#0b1020" />
+  <meta name="theme-color" content="#ffffff" />
   <meta property="og:title" content="AssembledHOI" />
   <meta property="og:description" content="Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="static/images/hero_collage.webp" />
   <link rel="icon" href="static/images/favicon.svg" type="image/svg+xml" />
+
+  <!-- Keep the original stylesheet so the existing font stack / general typography remain available. -->
   <link rel="stylesheet" href="static/css/style.css" />
+
+  <!--
+    Page-specific overrides.
+    The goal here is deliberately simple: one consistent centered content width,
+    centered section headings, clean academic spacing, and no decorative cards/glows.
+  -->
+  <style>
+    :root {
+      --page-width: 1120px;
+      --page-gutter: 28px;
+      --section-gap: 82px;
+      --ink-clean: #172033;
+      --muted-clean: #667085;
+      --line-clean: #e5e7eb;
+      --accent-clean: #655cff;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      background: #fff;
+      color: var(--ink-clean);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .page-container {
+      width: min(var(--page-width), calc(100% - (var(--page-gutter) * 2)));
+      margin: 0 auto;
+    }
+
+    .page-section {
+      padding: var(--section-gap) 0;
+      border-top: 1px solid var(--line-clean);
+      background: #fff;
+    }
+
+    .page-section:first-of-type { border-top: 0; }
+
+    .section-title {
+      margin: 0 0 34px;
+      text-align: center;
+      font-size: clamp(31px, 3.6vw, 43px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 800;
+      color: #172033;
+    }
+
+    .section-intro {
+      max-width: 920px;
+      margin: -17px auto 34px;
+      text-align: center;
+      color: var(--muted-clean);
+      font-size: 15px;
+      line-height: 1.72;
+    }
+
+    /* ---------- Hero ---------- */
+    .paper-hero {
+      padding: 92px 0 72px;
+      text-align: center;
+      background: #fff;
+    }
+
+    .venue-line {
+      margin: 0 0 19px;
+      color: #737b8c;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .project-name-clean {
+      margin: 0;
+      font-size: clamp(58px, 8vw, 94px);
+      line-height: .98;
+      letter-spacing: -.07em;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .project-name-clean span { color: var(--accent-clean); }
+
+    .paper-title-clean {
+      max-width: 1000px;
+      margin: 25px auto 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(22px, 2.7vw, 33px);
+      line-height: 1.3;
+      font-weight: 500;
+      letter-spacing: -.022em;
+      color: #1f2937;
+    }
+
+    .authors-clean {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px 17px;
+      margin-top: 14px;
+      color: #344054;
+      font-size: 16px;
+      font-weight: 650;
+    }
+
+    .authors-clean sup,
+    .affiliations-clean sup { color: var(--accent-clean); font-weight: 800; }
+
+    .affiliations-clean {
+      max-width: 1030px;
+      margin: 12px auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px 15px;
+      color: #7a8290;
+      font-size: 13px;
+    }
+
+    .hero-actions-clean {
+      margin: 28px auto 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .hero-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 17px;
+      border: 1px solid #dfe3eb;
+      border-radius: 999px;
+      background: #fff;
+      color: #2f394a;
+      font-size: 14px;
+      font-weight: 750;
+      box-shadow: 0 4px 12px rgba(16, 24, 40, .04);
+      transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+
+    .hero-btn:hover {
+      transform: translateY(-1px);
+      border-color: #c7ccd6;
+      box-shadow: 0 8px 18px rgba(16, 24, 40, .08);
+    }
+
+    .hero-btn.primary {
+      border-color: #242b3a;
+      background: #242b3a;
+      color: #fff;
+    }
+
+    /* ---------- Abstract ---------- */
+    .abstract-full {
+      margin: 0;
+      color: #344054;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(18px, 1.75vw, 21px);
+      line-height: 1.78;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+
+    /* ---------- PDF figures ---------- */
+    .pdf-figure {
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .pdf-frame {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #e6e8ed;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    .pdf-frame.framework { height: clamp(430px, 57vw, 650px); }
+    .pdf-frame.comparison { height: clamp(390px, 52vw, 610px); }
+    .pdf-frame.ablation { height: clamp(390px, 50vw, 590px); }
+
+    .pdf-frame object,
+    .pdf-frame iframe,
+    .pdf-frame embed {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    .pdf-loading,
+    .pdf-missing {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 28px;
+      text-align: center;
+      color: #8a93a3;
+      font-size: 14px;
+      line-height: 1.6;
+      background: #fafafa;
+    }
+
+    .figure-caption {
+      width: 96%;
+      margin: 15px auto 0;
+      text-align: center;
+      color: #667085;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.68;
+    }
+
+    /* ---------- Video results ---------- */
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      column-gap: 18px;
+      row-gap: 33px;
+      width: 100%;
+    }
+
+    .video-item {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .video-shell {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #e2e5ea;
+      border-radius: 9px;
+      background: #f7f7f8;
+      aspect-ratio: 1 / 1;
+    }
+
+    .video-shell video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      background: #f7f7f8;
+    }
+
+    .video-prompt {
+      width: 92%;
+      min-height: 3.25em;   /* reserve roughly two lines */
+      margin: 10px auto 0;
+      color: #3f4755;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.55;
+      text-align: center;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      text-wrap: pretty;
+    }
+
+    .video-status {
+      grid-column: 1 / -1;
+      padding: 26px 0;
+      text-align: center;
+      color: #8a93a3;
+      font-size: 14px;
+    }
+
+    /* ---------- Human-human extension ---------- */
+    .extension-video-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 340px));
+      justify-content: center;
+      gap: 24px;
+      width: 100%;
+      margin: 0 auto 24px;
+    }
+
+    .extension-copy {
+      width: 92%;
+      margin: 8px auto 0;
+      color: #4f5968;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 15px;
+      line-height: 1.78;
+      text-align: left;
+    }
+
+    /* ---------- Comparison table ---------- */
+    .metric-table-wrap {
+      width: 100%;
+      margin-bottom: 48px;
+      overflow-x: auto;
+      border: 1px solid #e2e5ea;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .metric-table {
+      width: 100%;
+      min-width: 850px;
+      border-collapse: collapse;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-table th,
+    .metric-table td {
+      padding: 14px 14px;
+      border-bottom: 1px solid #eceef2;
+      text-align: center;
+      color: #475467;
+    }
+
+    .metric-table th {
+      background: #fafafa;
+      color: #596273;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric-table th:first-child,
+    .metric-table td:first-child { text-align: left; padding-left: 20px; }
+
+    .metric-table tbody tr:last-child td { border-bottom: 0; }
+
+    .metric-table .ours-row td {
+      background: #f6f5ff;
+      color: #312e81;
+      font-weight: 800;
+    }
+
+    .comparison-block + .comparison-block { margin-top: 52px; }
+
+    .comparison-subtitle {
+      margin: 0 0 18px;
+      text-align: center;
+      font-size: 20px;
+      line-height: 1.35;
+      font-weight: 750;
+      letter-spacing: -.02em;
+      color: #263042;
+    }
+
+    .comparison-copy,
+    .ablation-copy {
+      max-width: 980px;
+      margin: 17px auto 0;
+      color: #525c6c;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      line-height: 1.72;
+      text-align: center;
+    }
+
+    /* ---------- Citation ---------- */
+    .bib-card-clean {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #dfe3eb;
+      border-radius: 12px;
+      background: #0b1020;
+    }
+
+    .bib-card-clean pre {
+      margin: 0;
+      padding: 28px;
+      overflow: auto;
+      color: #dfe6f2;
+      font: 13px/1.75 "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    .copy-btn-clean {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 2;
+      padding: 8px 11px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      color: #dfe6f2;
+      background: rgba(255,255,255,.08);
+      font-size: 11px;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .page-footer {
+      padding: 28px 0 38px;
+      border-top: 1px solid var(--line-clean);
+      color: #7a8290;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    @media (max-width: 980px) {
+      :root { --section-gap: 70px; }
+      .video-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .pdf-frame.framework { height: clamp(400px, 64vw, 590px); }
+    }
+
+    @media (max-width: 720px) {
+      :root { --page-gutter: 18px; --section-gap: 58px; }
+      .paper-hero { padding: 70px 0 56px; }
+      .project-name-clean { font-size: 56px; }
+      .paper-title-clean { font-size: 21px; }
+      .authors-clean { font-size: 14px; gap: 4px 11px; }
+      .affiliations-clean { font-size: 11px; }
+      .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
+      .extension-video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+      .video-prompt { font-size: 13px; min-height: 3.2em; width: 96%; }
+      .pdf-frame.framework,
+      .pdf-frame.comparison,
+      .pdf-frame.ablation { height: 460px; }
+      .abstract-full { text-align: left; }
+    }
+
+    @media (max-width: 460px) {
+      .video-grid { grid-template-columns: 1fr; }
+      .extension-video-grid { grid-template-columns: 1fr; max-width: 340px; }
+      .video-shell { max-width: 320px; margin: 0 auto; }
+      .video-prompt { max-width: 300px; }
+      .pdf-frame.framework,
+      .pdf-frame.comparison,
+      .pdf-frame.ablation { height: 390px; }
+    }
+  </style>
 </head>
 <body>
-  <header class="topbar" id="topbar">
-    <div class="nav-shell">
-      <a class="brand" href="#top" aria-label="AssembledHOI home">
-        <span class="brand-mark">A</span>
-        <span>AssembledHOI</span>
-      </a>
-      <nav class="nav-links" aria-label="Main navigation">
-        <a href="#abstract">Abstract</a>
-        <a href="#method">Method</a>
-        <a href="#results">Results</a>
-        <a href="#citation">Citation</a>
-      </nav>
-      <a class="nav-code" href="https://github.com/donghongyong/AssembledHOI" target="_blank" rel="noopener">Code ↗</a>
-    </div>
-  </header>
 
-  <main id="top">
-    <section class="hero section-pad">
-      <div class="shell hero-inner">
-        <div class="venue-pill reveal"><span class="venue-dot"></span> ECCV 2026 Workshop</div>
-        <h1 class="project-name reveal">Assembled<span>HOI</span></h1>
-        <h2 class="paper-title reveal">Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors</h2>
+  <main>
+    <!-- ============================================================
+         HERO
+         ============================================================ -->
+    <section class="paper-hero">
+      <div class="page-container">
+        <h1 class="project-name-clean">Assembled<span>HOI</span></h1>
+        <h2 class="paper-title-clean">Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors</h2>
+        <div class="venue-line">ECCV 2026 Workshop</div>
 
-        <div class="authors reveal" aria-label="Authors">
+        <div class="authors-clean" aria-label="Authors">
           <span>Hongyong Dong<sup>1</sup></span>
           <span>Jiaming Chu<sup>1</sup></span>
           <span>Fanglong Yao<sup>2</sup></span>
@@ -46,186 +472,170 @@
           <span>Li Wang<sup>1</sup></span>
           <span>Lei Jin<sup>1*</sup></span>
         </div>
-        <div class="affiliations reveal">
+
+        <div class="affiliations-clean">
           <span><sup>1</sup> Beijing University of Posts and Telecommunications</span>
           <span><sup>2</sup> University of Chinese Academy of Sciences</span>
           <span><sup>3</sup> Beihang University</span>
           <span><sup>4</sup> Tsinghua University</span>
         </div>
 
-        <div class="hero-actions reveal">
-          <a class="action-btn primary" href="static/pdfs/AssembledHOI_ECCV26.pdf" target="_blank" rel="noopener" aria-label="Open paper PDF">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6zM14 2v5h5M9 13h6M9 17h6M9 9h2"/></svg>
-            Paper
-          </a>
-          <a class="action-btn" href="static/pdfs/AssembledHOI_Supply_ECCV26.pdf" target="_blank" rel="noopener" aria-label="Open supplementary PDF">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v18H7zM10 7h4M10 11h4M10 15h4"/></svg>
-            Supplementary
-          </a>
-          <a class="action-btn" href="https://github.com/donghongyong/AssembledHOI" target="_blank" rel="noopener" aria-label="Open GitHub repository">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.87c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.04 1.53 1.04.9 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.64-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02A9.5 9.5 0 0 1 12 6.84a9.5 9.5 0 0 1 2.5.34c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.86v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
-            Code
-          </a>
-          <a class="action-btn" href="#citation">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h10M7 11h10M7 15h6M5 3h14v18H5z"/></svg>
-            BibTeX
-          </a>
-        </div>
-
-        <div class="hero-media reveal">
-          <div class="media-glow glow-a"></div>
-          <div class="media-glow glow-b"></div>
-          <img src="static/images/hero_collage.webp" alt="Selected AssembledHOI human-object interaction synthesis results" loading="eager" />
-          <div class="hero-media-caption">
-            <span class="caption-kicker">TEXT → STRUCTURED PRIORS → INTERACTION</span>
-            <span>Zero-shot 3D HOI synthesis through compositional Gaussian assembly.</span>
-          </div>
-        </div>
-
-        <div class="stat-grid reveal" aria-label="Key results">
-          <article class="stat-card"><strong>0.3835</strong><span>CLIP Score ↑</span></article>
-          <article class="stat-card"><strong>53.3%</strong><span>GPT-4V Select ↑</span></article>
-          <article class="stat-card"><strong>13.6%</strong><span>R-Collision ↓</span></article>
-          <article class="stat-card"><strong>53.7%</strong><span>R-Contact ↑</span></article>
-          <article class="stat-card accent-stat"><strong>25 min</strong><span>RTX 3090 · 17 GB</span></article>
+        <div class="hero-actions-clean">
+          <a class="hero-btn primary" href="static/pdfs/AssembledHOI_ECCV26.pdf" target="_blank" rel="noopener">Paper</a>
+          <a class="hero-btn" href="static/pdfs/AssembledHOI_Supply_ECCV26.pdf" target="_blank" rel="noopener">Supplementary</a>
+          <a class="hero-btn" href="https://github.com/DONGHONGYONG/AssembledHOI" target="_blank" rel="noopener">Code</a>
+          <a class="hero-btn" href="#citation">BibTeX</a>
         </div>
       </div>
     </section>
 
-    <section id="abstract" class="section-pad white-section">
-      <div class="shell narrow-shell">
-        <div class="section-heading reveal">
-          <p class="eyebrow">OVERVIEW</p>
-          <h2>Assemble first. Refine where interaction matters.</h2>
-        </div>
-        <p class="abstract-text reveal">
-          AssembledHOI is a zero-shot framework for 3D human-object interaction synthesis. Instead of optimizing the human and object as one entangled scene from the start, it initializes them as structured Gaussian priors, jointly optimizes their spatial configuration, and then focuses supervision on interaction-critical body parts and local texture regions. The result is a controllable pipeline that targets both geometric plausibility and texture fidelity while keeping optimization efficient.
+    <!-- ============================================================
+         ABSTRACT
+         ============================================================ -->
+    <section id="abstract" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Abstract</h2>
+        <p class="abstract-full">
+          Recent advances in 3D generation have enabled zero-shot text-to-HOI (Human-Object Interaction) synthesis. However, existing methods either lack explicit modeling of human-object spatial relationships or fail to consider collaborative optimization of geometry and texture. To address these issues, we propose AssembledHOI, a novel framework that achieves efficient and accurate 3D HOI synthesis through structured assembly of Gaussian priors for humans and objects. Specifically, rather than treating the scene as a monolithic entity throughout the entire process, our approach explicitly decouples the human and the object components at initialization and gets the priors of body pose and object through existing 3D generation models. Moreover, we introduce part-aware interaction optimization that achieves semantically aligned human-object position configuration by modulating Score Distillation Sampling (SDS) gradients on interaction-relevant body parts. In addition, we design part-guided textural enhancement to refine interaction regions via localized supervision, thereby improving texture fidelity while reinforcing positional consistency. Quantitative experiments demonstrate that AssembledHOI attains state-of-the-art CLIP scores, with a running time of 25 minutes, over 3 × faster than existing methods.
         </p>
-        <div class="idea-grid">
-          <article class="idea-card reveal">
-            <div class="idea-index">01</div>
-            <h3>Structured Assembly</h3>
-            <p>Decoupled human and object Gaussian priors preserve structure and expose explicit pose, scale, and spatial controls.</p>
-            <span class="chip">Gaussian Priors</span>
-          </article>
-          <article class="idea-card reveal">
-            <div class="idea-index">02</div>
-            <h3>Part-Aware Interaction</h3>
-            <p>Adaptive anchoring and body-part-aware gradient modulation focus optimization on interaction-relevant regions.</p>
-            <div class="chip-row"><span class="chip">AAS</span><span class="chip">PALR</span></div>
-          </article>
-          <article class="idea-card reveal">
-            <div class="idea-index">03</div>
-            <h3>Part-Guided Texture</h3>
-            <p>Close-up, localized supervision refines faces and contact areas without sacrificing global consistency.</p>
-            <span class="chip">PGTE</span>
-          </article>
-        </div>
       </div>
     </section>
 
-    <section id="method" class="section-pad soft-section">
-      <div class="shell">
-        <div class="section-heading centered reveal">
-          <p class="eyebrow">METHOD</p>
-          <h2>From text to assembled 3D interaction</h2>
-          <p class="section-lead">A two-stage pipeline separates structural alignment from fine-grained appearance refinement.</p>
-        </div>
-        <figure class="figure-card reveal lightbox-target" data-full="static/images/method.webp">
-          <img src="static/images/method.webp" alt="Overall framework of AssembledHOI" loading="lazy" />
-          <figcaption>Overall pipeline: decoupled priors → part-aware interaction optimization → part-guided textural enhancement.</figcaption>
-        </figure>
-        <div class="method-steps">
-          <article class="method-step reveal"><span>1</span><div><h3>Initialize</h3><p>Sample a human pose from a text-to-motion prior and an object asset from a text-to-3D prior, then convert both into dense Gaussian representations.</p></div></article>
-          <article class="method-step reveal"><span>2</span><div><h3>Assemble & Align</h3><p>Optimize human/object 6-DoF pose and scale, stabilize motion with adaptive anchoring, and emphasize interaction-critical body parts.</p></div></article>
-          <article class="method-step reveal"><span>3</span><div><h3>Enhance</h3><p>Use global multi-view supervision together with close-up part views to strengthen texture and local interaction detail.</p></div></article>
-        </div>
-      </div>
-    </section>
+    <!-- ============================================================
+         FRAMEWORK OVERVIEW
+         The PDF is discovered from the webpage branch at runtime.
+         If your filename is unusual, edit FIGURE_HINTS.framework below.
+         ============================================================ -->
+    <section id="framework" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Framework Overview</h2>
 
-    <section id="results" class="section-pad white-section">
-      <div class="shell">
-        <div class="section-heading reveal">
-          <p class="eyebrow">RESULTS</p>
-          <h2>Diverse interactions, explicit ablations, controllable appearance</h2>
-          <p class="section-lead">The project page surfaces the visual evidence first; the paper and supplement contain the complete experimental protocol.</p>
-        </div>
-
-        <div class="result-grid">
-          <figure class="result-card result-wide reveal lightbox-target" data-full="static/images/results.webp">
-            <div class="result-media"><img src="static/images/results.webp" alt="Diverse AssembledHOI results and ablation examples" loading="lazy" /></div>
-            <figcaption><strong>Diverse synthesis + ablations.</strong> Examples span riding, sports, sitting and interaction-specific component studies.</figcaption>
-          </figure>
-          <figure class="result-card reveal lightbox-target" data-full="static/images/pose_texture.webp">
-            <div class="result-media"><img src="static/images/pose_texture.webp" alt="Pose and texture variation results" loading="lazy" /></div>
-            <figcaption><strong>Pose & texture control.</strong> The same interaction can be synthesized across different poses and visual styles.</figcaption>
-          </figure>
-          <div class="result-card metric-story reveal">
-            <div>
-              <p class="eyebrow">EFFICIENCY</p>
-              <h3>25 minutes on a single RTX 3090</h3>
-              <p>The framework uses 2,400 optimization iterations and reports 17 GB GPU memory usage on RTX 3090.</p>
-            </div>
-            <div class="metric-bars" aria-label="Training time comparison">
-              <div><span>DreamFusion</span><i style="--v:15.7%"></i><b>1.8 h</b></div>
-              <div><span>Magic3D</span><i style="--v:17.4%"></i><b>2.0 h</b></div>
-              <div><span>TextMesh</span><i style="--v:13%"></i><b>1.5 h</b></div>
-              <div><span>InterFusion</span><i style="--v:39.1%"></i><b>4.5 h</b></div>
-              <div><span>DreamHOI</span><i style="--v:100%"></i><b>11.5 h</b></div>
-              <div class="ours"><span>AssembledHOI</span><i style="--v:3.6%"></i><b>25 min</b></div>
-            </div>
+        <figure class="pdf-figure">
+          <div class="pdf-frame framework" id="frameworkPdf">
+            <div class="pdf-loading">Loading the framework PDF…</div>
           </div>
-        </div>
-
-        <div class="table-card reveal">
-          <div class="table-head">
-            <div><p class="eyebrow">QUANTITATIVE COMPARISON</p><h3>Core metrics from the paper</h3></div>
-            <span class="table-note">↑ higher is better · ↓ lower is better</span>
-          </div>
-          <div class="table-scroll">
-            <table>
-              <thead><tr><th>Method</th><th>CLIP ↑</th><th>GPT-4V Select ↑</th><th>R-Collision ↓</th><th>R-Contact ↑</th><th>Time ↓</th></tr></thead>
-              <tbody>
-                <tr><td>DreamFusion</td><td>0.3027</td><td>3.78%</td><td>20.5%</td><td>21.6%</td><td>1.8 h</td></tr>
-                <tr><td>Magic3D</td><td>0.3179</td><td>5.36%</td><td>19.6%</td><td>13.2%</td><td>2.0 h</td></tr>
-                <tr><td>TextMesh</td><td>0.2761</td><td>0.76%</td><td>17.3%</td><td>19.5%</td><td>1.5 h</td></tr>
-                <tr><td>InterFusion</td><td>0.3308</td><td>26.5%</td><td>16.8%</td><td>26.9%</td><td>4.5 h</td></tr>
-                <tr><td>DreamHOI</td><td>0.2932</td><td>10.3%</td><td>15.9%</td><td>29.8%</td><td>11.5 h</td></tr>
-                <tr><td>InteractAnything</td><td>0.2968</td><td>–</td><td>–</td><td>52.1%</td><td>–</td></tr>
-                <tr class="ours-row"><td><strong>AssembledHOI</strong></td><td><strong>0.3835</strong></td><td><strong>53.3%</strong></td><td><strong>13.6%</strong></td><td><strong>53.7%</strong></td><td><strong>25 min</strong></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section-pad dark-section">
-      <div class="shell extension-grid">
-        <div class="extension-copy reveal">
-          <p class="eyebrow light">EXTENSION</p>
-          <h2>Assembly naturally extends beyond human-object pairs.</h2>
-          <p>The same compositional idea can recombine structured components for zero-shot human-human interaction, illustrating the broader generalization of an assembly-based representation.</p>
-        </div>
-        <figure class="extension-figure reveal lightbox-target" data-full="static/images/human_human.webp">
-          <img src="static/images/human_human.webp" alt="Human-human interaction extension results" loading="lazy" />
+          <figcaption class="figure-caption">
+            <strong>Fig. 2: Overall framework of AssembledHOI.</strong> Firstly, we utilize both of text-to-motion model and text-to-3D model to generate the initialized point clouds. After executing dense geometry sampling on the point clouds, we use GPT-4V to obtain the set of key parts of the interaction via the text prompt. Then we conduct positional optimization of the corresponding interaction by applying local refinement to the involved body parts. Finally, we further incorporate multiple viewpoints, including close-up renderings, and apply the SDS method to optimize key parts, thereby enhancing texture fidelity and detail. As illustrated in the figure, although satisfactory results can be achieved at 2000th step, the synthesis output (at 2400th step) attains optimal performance under part-guided optimization.
+          </figcaption>
         </figure>
       </div>
     </section>
 
-    <section id="citation" class="section-pad soft-section">
-      <div class="shell narrow-shell">
-        <div class="section-heading reveal">
-          <p class="eyebrow">CITATION</p>
-          <h2>Cite AssembledHOI</h2>
-          <!-- <p class="section-lead">Replace the proceedings metadata here if the official ECCV workshop BibTeX changes after publication.</p> -->
+    <!-- ============================================================
+         RESULTS — all videos in the webpage branch are loaded here.
+         Filenames are converted into temporary prompts automatically.
+         ============================================================ -->
+    <section id="results" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Results</h2>
+        <p class="section-intro">All videos are shown directly in a fixed grid. Their temporary captions are generated from the video filenames and can be replaced later with the final text prompts.</p>
+
+        <div class="video-grid" id="videoGrid">
+          <div class="video-status">Loading videos…</div>
         </div>
-        <div class="bib-card reveal">
-          <button class="copy-btn" id="copyBib" type="button">Copy BibTeX</button>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         COMPARISON
+         ============================================================ -->
+    <section id="comparison" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Comparison</h2>
+
+        <div class="metric-table-wrap">
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>CLIP ↑</th>
+                <th>GPT-4V Select ↑</th>
+                <th>R-Collision ↓</th>
+                <th>R-Contact ↑</th>
+                <th>Time ↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>DreamFusion</td><td>0.3027</td><td>3.78%</td><td>20.5%</td><td>21.6%</td><td>1.8 h</td></tr>
+              <tr><td>Magic3D</td><td>0.3179</td><td>5.36%</td><td>19.6%</td><td>13.2%</td><td>2.0 h</td></tr>
+              <tr><td>TextMesh</td><td>0.2761</td><td>0.76%</td><td>17.3%</td><td>19.5%</td><td>1.5 h</td></tr>
+              <tr><td>InterFusion</td><td>0.3308</td><td>26.5%</td><td>16.8%</td><td>26.9%</td><td>4.5 h</td></tr>
+              <tr><td>DreamHOI</td><td>0.2932</td><td>10.3%</td><td>15.9%</td><td>29.8%</td><td>11.5 h</td></tr>
+              <tr><td>InteractAnything</td><td>0.2968</td><td>–</td><td>–</td><td>52.1%</td><td>–</td></tr>
+              <tr class="ours-row"><td>AssembledHOI</td><td>0.3835</td><td>53.3%</td><td>13.6%</td><td>53.7%</td><td>25 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="comparison-block">
+          <h3 class="comparison-subtitle">Qualitative Comparison in the Main Paper</h3>
+          <div id="mainComparisonFigures"></div>
+          <p class="comparison-copy">
+            When given complex human-object interaction prompts, such as “a man in a hoodie, camouflage jacket, joggers and trainers carrying a backpack”, methods like DreamFusion, Magic3D and TextMesh produced results with insufficient physical plausibility, exhibiting noticeable structural distortions. Although InterFusion and InteractAnything generate geometrically coherent human-object interactions, like the others, it suffers from textures that lack richness and visual fidelity compared to our approach. Furthermore, while DreamHOI relies on UV maps to generate diverse styles, our approach eliminates this dependency. In terms of text prompt alignment, our method also demonstrates clear superiority over all six baseline approaches.
+          </p>
+        </div>
+
+        <div class="comparison-block">
+          <h3 class="comparison-subtitle">Additional Comparison in the Supplementary Material</h3>
+          <div id="suppComparisonFigures"></div>
+          <p class="comparison-copy">
+            Our approach achieves superior performance compared to the baseline methods in terms of both geometric consistency and texture fidelity. As illustrated in Fig. 2a, more samples generated by our AssembledHOI under diverse prompts demonstrate not only strong alignment with the input prompts, but also high-fidelity details and accurate spatial articulation. Moreover, we have also demonstrated scenarios involving multi-object interaction in Fig. 2b, showcasing the strong compositional generalization ability of our framework.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         ABLATION
+         ============================================================ -->
+    <section id="ablation" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Ablation Study</h2>
+
+        <figure class="pdf-figure">
+          <div class="pdf-frame ablation" id="ablationPdf">
+            <div class="pdf-loading">Loading the ablation PDF…</div>
+          </div>
+          <figcaption class="figure-caption">Qualitative ablation results for the proposed components.</figcaption>
+        </figure>
+
+        <p class="ablation-copy">
+          The results show that AAS alone achieves a significant improvement of +6.36% in the CLIP score, highlighting its critical role in selecting semantically meaningful anchors for human-object interaction. When combined with PALR, the performance increases further to 0.3652, indicating that local refinement improves fine-grained alignment between body parts and objects. Finally, integrating PGTE leads to a further boost of +1.83%, confirming its effectiveness in enriching texture details by the part-guided mechanism. Notably, the full model achieves the highest CLIP score (0.3835), the highest R-Contact (53.7%) and the lowest R-Collision (13.6%), surpassing all individual or partial combinations. This consistent improvement across components demonstrates the synergistic effect among AAS, PALR and PGTE.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         EXTENSION AND LIMITATION
+         Human-human interaction videos are separated from the main
+         results grid and kept synchronized with all other videos.
+         ============================================================ -->
+    <section id="extension" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Extension and Limitation</h2>
+
+        <div class="extension-video-grid" id="extensionVideoGrid">
+          <div class="video-status">Loading extension videos…</div>
+        </div>
+
+        <p class="extension-copy">
+          Since the core of our method lies in the assembly of humans and objects, AssembledHOI can be naturally extended to enable zero-shot generation of human-human interactions. Our method achieves generalization by disentangling structural components, e.g. pose from an object, allowing the text-guided assembly of novel interactions among unseen characters. As shown in Fig. 8, we generate scenes of interactions such as “Batman and Iron Man shaking hands” or “Spider-Man and Captain America waving”. These results demonstrate the strong compositional generalization ability of our framework, where new interactions are synthesized by recombining learned components based on text prompts.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         CITATION
+         ============================================================ -->
+    <section id="citation" class="page-section">
+      <div class="page-container">
+        <h2 class="section-title">Citation</h2>
+        <div class="bib-card-clean">
+          <button class="copy-btn-clean" id="copyBib" type="button">Copy BibTeX</button>
           <pre id="bibtex"><code>@inproceedings{dong2026assembledhoi,
   title     = {AssembledHOI: Compositional Synthesis of 3D Human-Object Interaction via Assembling Gaussian Priors},
   author    = {Dong, Hongyong and Chu, Jiaming and Yao, Fanglong and Fan, Zhaoxin and Zhao, Hao and Wang, Li and Jin, Lei},
-  booktitle = {The 3rd Workshop on Scalable 3D Scene Generation and Geometric Scene Understanding},
+  booktitle = {European Conference on Computer Vision (ECCV) Workshops},
   year      = {2026}
 }</code></pre>
         </div>
@@ -233,22 +643,393 @@
     </section>
   </main>
 
-  <footer>
-    <div class="shell footer-inner">
-      <div><strong>AssembledHOI</strong><span> · ECCV 2026 Workshop</span></div>
-      <div class="footer-links">
-        <a href="static/pdfs/AssembledHOI_ECCV26.pdf" target="_blank" rel="noopener">Paper</a>
-        <a href="static/pdfs/AssembledHOI_Supply_ECCV26.pdf" target="_blank" rel="noopener">Supplementary</a>
-        <a href="https://github.com/donghongyong/AssembledHOI" target="_blank" rel="noopener">GitHub</a>
-      </div>
-    </div>
+  <footer class="page-footer">
+    <div class="page-container">AssembledHOI · ECCV 2026 Workshop</div>
   </footer>
 
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview" hidden>
-    <button class="lightbox-close" id="lightboxClose" aria-label="Close image preview">×</button>
-    <img id="lightboxImage" alt="Expanded research figure" />
-  </div>
+  <script>
+    /* ==============================================================
+       Repository asset discovery
+       --------------------------------------------------------------
+       This page discovers PDFs and videos directly from the public
+       "webpage" branch, so newly-added videos can appear automatically.
+       If you later rename the branch, change REPO_BRANCH only.
+       ============================================================== */
+    const REPO_OWNER = "DONGHONGYONG";
+    const REPO_NAME = "AssembledHOI";
+    const REPO_BRANCH = "webpage";
 
-  <script src="static/js/main.js"></script>
+    /*
+      Optional manual overrides.
+      Leave a value empty to let the page auto-detect the matching PDF.
+      If auto-detection ever selects the wrong file, put the exact repository
+      path here, for example: "static/pdfs/framework.pdf".
+    */
+    const MANUAL_PDF = {
+      framework: "",
+      ablation: ""
+    };
+
+    /*
+      Matching hints for your figure PDF filenames.
+      The matching is intentionally flexible because the uploaded figure
+      filenames may differ from the paper's figure numbers.
+    */
+    const FIGURE_HINTS = {
+      framework: ["framework", "overview", "architecture", "method", "fig2", "figure2"],
+      ablation: ["ablation", "fig5", "figure5"],
+      comparison: ["comparison", "compare", "baseline", "dreamhoi", "sota", "fig3", "figure3", "fig4", "figure4"],
+      supplementary: ["supp", "supply", "supplement"]
+    };
+
+    const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v", ".ogg"];
+
+    /*
+      Human-human interaction clips shown in the paper extension.
+      These filename hints keep the waving and hand-shaking clips out of
+      the main Results grid and place them in the extension section.
+    */
+    const EXTENSION_VIDEO_HINTS = [
+      "wave", "waving",
+      "shake hand", "shake hands", "shaking hand", "shaking hands",
+      "handshake", "hand shake"
+    ];
+
+    function lowerPath(path) {
+      try { return decodeURIComponent(path).toLowerCase(); }
+      catch (_) { return path.toLowerCase(); }
+    }
+
+    function isVideo(path) {
+      const p = lowerPath(path);
+      return VIDEO_EXTENSIONS.some(ext => p.endsWith(ext));
+    }
+
+    function isExtensionVideo(path) {
+      const normalized = filenameToPrompt(path).toLowerCase();
+      const raw = lowerPath(path).replace(/[_-]+/g, " ");
+      return EXTENSION_VIDEO_HINTS.some(hint =>
+        normalized.includes(hint) || raw.includes(hint)
+      );
+    }
+
+    function isPdf(path) {
+      return lowerPath(path).endsWith(".pdf");
+    }
+
+    function isPaperPdf(path) {
+      const p = lowerPath(path);
+      return p.includes("assembledhoi_eccv26") || p.includes("assembledhoi_supply_eccv26");
+    }
+
+    function scoreByHints(path, hints) {
+      const p = lowerPath(path);
+      let score = 0;
+      hints.forEach((hint, index) => {
+        if (p.includes(hint)) score += Math.max(2, hints.length - index + 1);
+      });
+      return score;
+    }
+
+    async function getRepositoryTree() {
+      const cacheKey = `assembledhoi-tree-${REPO_BRANCH}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        try { return JSON.parse(cached); } catch (_) {}
+      }
+
+      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${REPO_BRANCH}?recursive=1`;
+      const response = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
+      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
+      const data = await response.json();
+      const paths = (data.tree || [])
+        .filter(item => item.type === "blob" && item.path)
+        .map(item => item.path);
+      sessionStorage.setItem(cacheKey, JSON.stringify(paths));
+      return paths;
+    }
+
+    function filenameToPrompt(path) {
+      let name = path.split("/").pop() || path;
+      name = name.replace(/\.[^.]+$/, "");
+      try { name = decodeURIComponent(name); } catch (_) {}
+      name = name
+        .replace(/[_-]+/g, " ")
+        .replace(/^\s*\d+[\s._-]*/, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      return name || "Text prompt";
+    }
+
+    function relativeAssetUrl(path) {
+      return `./${path.split("/").map(part => encodeURIComponent(part)).join("/")}`;
+    }
+
+    /* ==============================================================
+       PDF rendering
+       ============================================================== */
+    function mountPdf(container, path, frameClass = "comparison") {
+      if (!container || !path) return;
+      container.innerHTML = "";
+
+      const object = document.createElement("object");
+      object.type = "application/pdf";
+      object.data = `${relativeAssetUrl(path)}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`;
+      object.setAttribute("aria-label", path.split("/").pop() || "Research figure PDF");
+
+      const fallback = document.createElement("p");
+      fallback.className = "pdf-missing";
+      fallback.innerHTML = `Your browser cannot display this PDF inline. <a href="${relativeAssetUrl(path)}" target="_blank" rel="noopener">Open the PDF</a>.`;
+      object.appendChild(fallback);
+      container.appendChild(object);
+    }
+
+    function makePdfFigure(path, caption = "") {
+      const figure = document.createElement("figure");
+      figure.className = "pdf-figure";
+
+      const frame = document.createElement("div");
+      frame.className = "pdf-frame comparison";
+      mountPdf(frame, path, "comparison");
+      figure.appendChild(frame);
+
+      if (caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.className = "figure-caption";
+        figcaption.textContent = caption;
+        figure.appendChild(figcaption);
+      }
+      return figure;
+    }
+
+    function bestPdf(paths, key) {
+      if (MANUAL_PDF[key]) return MANUAL_PDF[key];
+      const candidates = paths.filter(path => isPdf(path) && !isPaperPdf(path));
+      const hints = FIGURE_HINTS[key] || [];
+      return candidates
+        .map(path => ({ path, score: scoreByHints(path, hints) }))
+        .filter(item => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path))[0]?.path || "";
+    }
+
+    function loadPdfFigures(paths) {
+      const frameworkPath = bestPdf(paths, "framework");
+      const ablationPath = bestPdf(paths, "ablation");
+
+      const framework = document.getElementById("frameworkPdf");
+      if (frameworkPath) mountPdf(framework, frameworkPath, "framework");
+      else framework.innerHTML = '<div class="pdf-missing">Framework PDF not detected. Rename the figure PDF with “framework”, “overview”, or “fig2”, or set MANUAL_PDF.framework in index.html.</div>';
+
+      const ablation = document.getElementById("ablationPdf");
+      if (ablationPath) mountPdf(ablation, ablationPath, "ablation");
+      else ablation.innerHTML = '<div class="pdf-missing">Ablation PDF not detected. Rename the figure PDF with “ablation” or “fig5”, or set MANUAL_PDF.ablation in index.html.</div>';
+
+      const comparisonCandidates = paths
+        .filter(path => isPdf(path) && !isPaperPdf(path))
+        .map(path => ({
+          path,
+          comparisonScore: scoreByHints(path, FIGURE_HINTS.comparison),
+          supplementScore: scoreByHints(path, FIGURE_HINTS.supplementary)
+        }))
+        .filter(item => item.comparisonScore > 0)
+        .sort((a, b) => b.comparisonScore - a.comparisonScore || a.path.localeCompare(b.path));
+
+      const main = comparisonCandidates.filter(item => item.supplementScore === 0);
+      const supp = comparisonCandidates.filter(item => item.supplementScore > 0);
+
+      const mainContainer = document.getElementById("mainComparisonFigures");
+      const suppContainer = document.getElementById("suppComparisonFigures");
+
+      if (main.length) {
+        main.forEach((item, index) => {
+          const block = document.createElement("div");
+          if (index > 0) block.style.marginTop = "28px";
+          block.appendChild(makePdfFigure(item.path));
+          mainContainer.appendChild(block);
+        });
+      } else {
+        mainContainer.innerHTML = '<div class="pdf-frame comparison"><div class="pdf-missing">Main-paper comparison PDF not detected. Use “comparison”, “baseline”, “fig3”, or “fig4” in the figure filename.</div></div>';
+      }
+
+      if (supp.length) {
+        supp.forEach((item, index) => {
+          const block = document.createElement("div");
+          if (index > 0) block.style.marginTop = "28px";
+          block.appendChild(makePdfFigure(item.path));
+          suppContainer.appendChild(block);
+        });
+      } else {
+        suppContainer.innerHTML = '<div class="pdf-frame comparison"><div class="pdf-missing">Supplementary comparison PDF not detected. Include “supp” or “supplement” together with “comparison” in the filename if needed.</div></div>';
+      }
+    }
+
+    /* ==============================================================
+       Video grid + synchronized playback
+       ============================================================== */
+    function createVideoItem(path) {
+      const article = document.createElement("article");
+      article.className = "video-item";
+
+      const shell = document.createElement("div");
+      shell.className = "video-shell";
+
+      const video = document.createElement("video");
+      video.className = "sync-video";
+      video.src = relativeAssetUrl(path);
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.disablePictureInPicture = true;
+      video.setAttribute("muted", "");
+      video.setAttribute("playsinline", "");
+      video.setAttribute("webkit-playsinline", "");
+      video.setAttribute("aria-label", filenameToPrompt(path));
+      shell.appendChild(video);
+
+      const prompt = document.createElement("div");
+      prompt.className = "video-prompt";
+      prompt.textContent = filenameToPrompt(path);
+
+      article.appendChild(shell);
+      article.appendChild(prompt);
+      return article;
+    }
+
+    function waitForMetadata(video) {
+      if (Number.isFinite(video.duration) && video.duration > 0) return Promise.resolve();
+      return new Promise(resolve => {
+        const done = () => resolve();
+        video.addEventListener("loadedmetadata", done, { once: true });
+        video.addEventListener("error", done, { once: true });
+        setTimeout(done, 12000);
+      });
+    }
+
+    async function synchronizeVideos() {
+      const videos = Array.from(document.querySelectorAll("video.sync-video"));
+      if (!videos.length) return;
+
+      await Promise.all(videos.map(waitForMetadata));
+
+      const playable = videos.filter(v => Number.isFinite(v.duration) && v.duration > 0);
+      if (!playable.length) return;
+
+      // Use the shortest clip as the master loop so every row restarts together.
+      const master = playable.reduce((shortest, video) => video.duration < shortest.duration ? video : shortest, playable[0]);
+
+      const startTogether = () => {
+        playable.forEach(video => {
+          try { video.pause(); } catch (_) {}
+          try { video.currentTime = 0; } catch (_) {}
+        });
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            playable.forEach(video => {
+              const promise = video.play();
+              if (promise && typeof promise.catch === "function") promise.catch(() => {});
+            });
+          });
+        });
+      };
+
+      playable.forEach(video => { video.loop = false; });
+      master.addEventListener("ended", startTogether);
+
+      // Small periodic correction keeps clips visually aligned after browser decoding drift.
+      window.setInterval(() => {
+        if (master.paused || master.ended) return;
+        const t = master.currentTime;
+        playable.forEach(video => {
+          if (video === master || !Number.isFinite(video.duration)) return;
+          if (Math.abs(video.currentTime - t) > 0.12 && t < video.duration - 0.08) {
+            try { video.currentTime = t; } catch (_) {}
+          }
+          if (video.paused && !video.ended) {
+            const promise = video.play();
+            if (promise && typeof promise.catch === "function") promise.catch(() => {});
+          }
+        });
+      }, 750);
+
+      startTogether();
+
+      // Browsers may block autoplay until the first interaction in unusual settings.
+      const retry = () => {
+        playable.forEach(video => {
+          if (video.paused && !video.ended) {
+            const promise = video.play();
+            if (promise && typeof promise.catch === "function") promise.catch(() => {});
+          }
+        });
+      };
+      document.addEventListener("click", retry, { once: true, passive: true });
+      document.addEventListener("touchstart", retry, { once: true, passive: true });
+    }
+
+    async function loadVideos(paths) {
+      const mainGrid = document.getElementById("videoGrid");
+      const extensionGrid = document.getElementById("extensionVideoGrid");
+
+      const allVideos = paths
+        .filter(isVideo)
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
+
+      const extensionVideos = allVideos.filter(isExtensionVideo);
+      const mainVideos = allVideos.filter(path => !isExtensionVideo(path));
+
+      mainGrid.innerHTML = "";
+      extensionGrid.innerHTML = "";
+
+      if (!mainVideos.length) {
+        mainGrid.innerHTML = '<div class="video-status">No main-result video files were detected in the webpage branch.</div>';
+      } else {
+        mainVideos.forEach(path => mainGrid.appendChild(createVideoItem(path)));
+      }
+
+      if (!extensionVideos.length) {
+        extensionGrid.innerHTML = '<div class="video-status">No waving or hand-shaking video was detected. Check the extension video filenames.</div>';
+      } else {
+        extensionVideos.forEach(path => extensionGrid.appendChild(createVideoItem(path)));
+      }
+
+      // Start and periodically correct every video on the page together,
+      // including the two human-human extension clips.
+      await synchronizeVideos();
+    }
+
+    /* ==============================================================
+       BibTeX copy
+       ============================================================== */
+    document.getElementById("copyBib")?.addEventListener("click", async () => {
+      const button = document.getElementById("copyBib");
+      const text = document.getElementById("bibtex")?.innerText || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        button.textContent = "Copied";
+        setTimeout(() => { button.textContent = "Copy BibTeX"; }, 1400);
+      } catch (_) {
+        button.textContent = "Select & copy";
+      }
+    });
+
+    /* ==============================================================
+       Boot
+       ============================================================== */
+    (async function bootPage() {
+      try {
+        const paths = await getRepositoryTree();
+        loadPdfFigures(paths);
+        await loadVideos(paths);
+      } catch (error) {
+        console.error("Could not discover repository assets:", error);
+        document.getElementById("videoGrid").innerHTML = '<div class="video-status">Could not load the repository video list. Check the GitHub branch name or API access.</div>';
+        document.getElementById("extensionVideoGrid").innerHTML = '<div class="video-status">Could not load the extension video list.</div>';
+        document.getElementById("frameworkPdf").innerHTML = '<div class="pdf-missing">Could not auto-detect the framework PDF. Set MANUAL_PDF.framework near the bottom of index.html if needed.</div>';
+        document.getElementById("ablationPdf").innerHTML = '<div class="pdf-missing">Could not auto-detect the ablation PDF. Set MANUAL_PDF.ablation near the bottom of index.html if needed.</div>';
+      }
+    })();
+  </script>
 </body>
 </html>
