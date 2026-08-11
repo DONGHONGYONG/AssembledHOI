@@ -191,6 +191,17 @@
       width: 100%;
     }
 
+    /* .pdf-frame {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid #e6e8ed;
+      border-radius: 10px;
+      background: #fafafa;
+      height: auto;
+      display:flex;
+      justify-content:center;
+    } */
     .pdf-frame {
       position: relative;
       width: 100%;
@@ -198,10 +209,8 @@
       border: 1px solid #e6e8ed;
       border-radius: 10px;
       background: #fafafa;
-      /* 高度完全由canvas撑开，不再强制aspect‑ratio盒子 */
       height: auto;
-      display:flex;
-      justify-content:center;
+      /* 删除display:flex，flex会干扰canvas原生尺寸 */
     }
     .pdf-frame canvas{
       width:100%;
@@ -660,6 +669,30 @@
       If auto-detection ever selects the wrong file, put the exact repository
       path here, for example: "static/pdfs/framework.pdf".
     */
+    /* ==============================================================
+       静态资源手动配置（移除GitHub远程API，根治视频加载失败）
+       只需要在这里填写你的静态文件路径，不再请求外网接口
+       ============================================================== */
+    const ASSETS = {
+        // 高清PDF示意图路径
+        pdf:{
+            framework:"static/pdfs/framework.pdf",
+            ablation:"static/pdfs/ablation.pdf",
+            comparison:"static/pdfs/comparison.pdf",
+            supplementary:""
+        },
+        // 主结果视频
+        mainVideos:[
+            "static/videos/xxx1.mp4",
+            "static/videos/xxx2.mp4",
+            "static/videos/xxx3.mp4"
+        ],
+        // 拓展人机交互视频（握手、挥手）
+        extensionVideos:[
+            "static/videos/wave1.mp4",
+            "static/videos/handshake.mp4"
+        ]
+    };
     const MANUAL_PDF = {
       framework: "",
       ablation: ""
@@ -677,7 +710,7 @@
       supplementary: ["supp", "supply", "supplement"]
     };
 
-    const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v", ".ogg"];
+    const VIDEO_EXTENSIONS = [".mp4", ".webm"];
 
     /*
       Human-human interaction clips shown in the paper extension.
@@ -717,33 +750,6 @@
       return p.includes("assembledhoi_eccv26") || p.includes("assembledhoi_supply_eccv26");
     }
 
-    function scoreByHints(path, hints) {
-      const p = lowerPath(path);
-      let score = 0;
-      hints.forEach((hint, index) => {
-        if (p.includes(hint)) score += Math.max(2, hints.length - index + 1);
-      });
-      return score;
-    }
-
-    async function getRepositoryTree() {
-      const cacheKey = `assembledhoi-tree-${REPO_BRANCH}`;
-      const cached = sessionStorage.getItem(cacheKey);
-      if (cached) {
-        try { return JSON.parse(cached); } catch (_) {}
-      }
-
-      const url = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${REPO_BRANCH}?recursive=1`;
-      const response = await fetch(url, { headers: { "Accept": "application/vnd.github+json" } });
-      if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
-      const data = await response.json();
-      const paths = (data.tree || [])
-        .filter(item => item.type === "blob" && item.path)
-        .map(item => item.path);
-      sessionStorage.setItem(cacheKey, JSON.stringify(paths));
-      return paths;
-    }
-
     function filenameToPrompt(path) {
       let name = path.split("/").pop() || path;
       name = name.replace(/\.[^.]+$/, "");
@@ -761,21 +767,29 @@
     }
 
     /* ==============================================================
-       PDF rendering
+       PDF渲染函数【最终高清修复版，解决放大模糊】
        ============================================================== */
     async function mountPdf(container, path, frameClass = "comparison") {
         if (!container || !path) return;
+        // 销毁旧的resize监听，防止多次绑定造成画布模糊
+        if(container._resizeCb){
+            window.removeEventListener("resize",container._resizeCb);
+            delete container._resizeCb;
+        }
+
         container.innerHTML = `<div class="pdf-loading">Loading the framework PDF…</div>`;
         const url = relativeAssetUrl(path);
     
         try {
-            const loadingTask = pdfjsLib.getDocument(url);
+            const loadingTask = pdfjsLib.getDocument({
+                url:url,
+                cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
+                cMapPacked:true
+            });
             const pdf = await loadingTask.promise;
             const page = await pdf.getPage(1);
     
-            // 设备像素比，高清屏幕关键
             const dpr = window.devicePixelRatio ?? 1;
-            // 限制最大渲染倍数，防止4k屏幕渲染过大画布卡顿
             const MAX_SCALE = 2.5;
     
             container.innerHTML = "";
@@ -786,27 +800,22 @@
             let resizeHandler;
     
             function renderCanvas() {
-                const boxWidth = container.clientWidth;
-                // 基础缩放：填满容器宽度
+                // 强制读取容器宽度
+                const boxWidth = container.clientWidth || 800;
                 const baseViewport = page.getViewport({ scale: 1 });
                 const baseScale = boxWidth / baseViewport.width;
-                // 叠加设备像素倍率
                 const renderScale = Math.min(baseScale * dpr, MAX_SCALE);
                 const viewport = page.getViewport({ scale: renderScale });
     
-                // canvas真实物理像素大小
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
-                // css显示大小(逻辑像素)
                 canvas.style.width = boxWidth + "px";
-                canvas.style.height = "auto";
+                canvas.style.height = (boxWidth*(viewport.height/viewport.width)) + "px";
                 canvas.style.display = "block";
     
-                // 高清图像平滑
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = "high";
     
-                // 高质量渲染意图 print代表矢量文字锐利
                 page.render({
                     canvasContext: ctx,
                     viewport: viewport,
@@ -815,9 +824,8 @@
             }
     
             resizeHandler = renderCanvas;
-            window.addEventListener("resize", resizeHandler);
             container._resizeCb = resizeHandler;
-    
+            window.addEventListener("resize", resizeHandler);
             renderCanvas();
     
         } catch (err) {
@@ -854,59 +862,30 @@
         .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path))[0]?.path || "";
     }
 
-    function loadPdfFigures(paths) {
-      const frameworkPath = bestPdf(paths, "framework");
-      const ablationPath = bestPdf(paths, "ablation");
-
+    function loadPdfFigures() {
       const framework = document.getElementById("frameworkPdf");
-      if (frameworkPath) mountPdf(framework, frameworkPath, "framework");
-      else framework.innerHTML = '<div class="pdf-missing">Framework PDF not detected. Rename the figure PDF with “framework”, “overview”, or “fig2”, or set MANUAL_PDF.framework in index.html.</div>';
+      if (ASSETS.pdf.framework) mountPdf(framework, ASSETS.pdf.framework, "framework");
+      else framework.innerHTML = '<div class="pdf-missing">请配置ASSETS.pdf.framework路径</div>';
 
       const ablation = document.getElementById("ablationPdf");
-      if (ablationPath) mountPdf(ablation, ablationPath, "ablation");
-      else ablation.innerHTML = '<div class="pdf-missing">Ablation PDF not detected. Rename the figure PDF with “ablation” or “fig5”, or set MANUAL_PDF.ablation in index.html.</div>';
-
-      const comparisonCandidates = paths
-        .filter(path => isPdf(path) && !isPaperPdf(path))
-        .map(path => ({
-          path,
-          comparisonScore: scoreByHints(path, FIGURE_HINTS.comparison),
-          supplementScore: scoreByHints(path, FIGURE_HINTS.supplementary)
-        }))
-        .filter(item => item.comparisonScore > 0)
-        .sort((a, b) => b.comparisonScore - a.comparisonScore || a.path.localeCompare(b.path));
-
-      const main = comparisonCandidates.filter(item => item.supplementScore === 0);
-      const supp = comparisonCandidates.filter(item => item.supplementScore > 0);
+      if (ASSETS.pdf.ablation) mountPdf(ablation, ASSETS.pdf.ablation, "ablation");
+      else ablation.innerHTML = '<div class="pdf-missing">请配置ASSETS.pdf.ablation路径</div>';
 
       const mainContainer = document.getElementById("mainComparisonFigures");
       const suppContainer = document.getElementById("suppComparisonFigures");
+      mainContainer.innerHTML = "";
+      suppContainer.innerHTML = "";
 
-      if (main.length) {
-        main.forEach((item, index) => {
-          const block = document.createElement("div");
-          if (index > 0) block.style.marginTop = "28px";
-          block.appendChild(makePdfFigure(item.path));
-          mainContainer.appendChild(block);
-        });
-      } else {
-        mainContainer.innerHTML = '<div class="pdf-frame comparison"><div class="pdf-missing">Main-paper comparison PDF not detected. Use “comparison”, “baseline”, “fig3”, or “fig4” in the figure filename.</div></div>';
+      if(ASSETS.pdf.comparison){
+          mainContainer.appendChild(makePdfFigure(ASSETS.pdf.comparison));
       }
-
-      if (supp.length) {
-        supp.forEach((item, index) => {
-          const block = document.createElement("div");
-          if (index > 0) block.style.marginTop = "28px";
-          block.appendChild(makePdfFigure(item.path));
-          suppContainer.appendChild(block);
-        });
-      } else {
-        suppContainer.innerHTML = '<div class="pdf-frame comparison"><div class="pdf-missing">Supplementary comparison PDF not detected. Include “supp” or “supplement” together with “comparison” in the filename if needed.</div></div>';
+      if(ASSETS.pdf.supplementary){
+          suppContainer.appendChild(makePdfFigure(ASSETS.pdf.supplementary));
       }
     }
 
     /* ==============================================================
-       Video grid + synchronized playback
+       Video模块 修复加载失败、黑屏、解码失败
        ============================================================== */
     function createVideoItem(path) {
       const article = document.createElement("article");
@@ -919,14 +898,19 @@
       video.className = "sync-video";
       video.src = relativeAssetUrl(path);
       video.muted = true;
-      video.defaultMuted = true;
       video.playsInline = true;
-      video.preload = "auto";
+      video.preload = "metadata"; // 仅预加载元数据，解决一次性加载卡死
       video.disablePictureInPicture = true;
       video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
       video.setAttribute("webkit-playsinline", "");
       video.setAttribute("aria-label", filenameToPrompt(path));
+
+      // 视频加载失败监听
+      video.onerror = function(){
+          shell.innerHTML = `<span style="color:#888;padding:10px">视频加载失败，请检查文件路径/视频编码(H.264‑AAC mp4)</span>`
+      }
+
       shell.appendChild(video);
 
       const prompt = document.createElement("div");
@@ -944,7 +928,7 @@
         const done = () => resolve();
         video.addEventListener("loadedmetadata", done, { once: true });
         video.addEventListener("error", done, { once: true });
-        setTimeout(done, 12000);
+        setTimeout(done,8000);
       });
     }
 
@@ -953,91 +937,64 @@
       if (!videos.length) return;
 
       await Promise.all(videos.map(waitForMetadata));
-
       const playable = videos.filter(v => Number.isFinite(v.duration) && v.duration > 0);
       if (!playable.length) return;
 
-      // Use the shortest clip as the master loop so every row restarts together.
       const master = playable.reduce((shortest, video) => video.duration < shortest.duration ? video : shortest, playable[0]);
 
       const startTogether = () => {
         playable.forEach(video => {
-          try { video.pause(); } catch (_) {}
-          try { video.currentTime = 0; } catch (_) {}
+          try { video.pause();video.currentTime = 0; } catch (_) {}
         });
-
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            playable.forEach(video => {
-              const promise = video.play();
-              if (promise && typeof promise.catch === "function") promise.catch(() => {});
-            });
+          playable.forEach(video => {
+            video.play().catch(()=>{});
           });
         });
       };
 
-      playable.forEach(video => { video.loop = false; });
+      playable.forEach(video => video.loop = false);
       master.addEventListener("ended", startTogether);
 
-      // Small periodic correction keeps clips visually aligned after browser decoding drift.
+      // 降低同步轮询频率，减少卡顿
       window.setInterval(() => {
         if (master.paused || master.ended) return;
         const t = master.currentTime;
         playable.forEach(video => {
-          if (video === master || !Number.isFinite(video.duration)) return;
-          if (Math.abs(video.currentTime - t) > 0.12 && t < video.duration - 0.08) {
-            try { video.currentTime = t; } catch (_) {}
-          }
-          if (video.paused && !video.ended) {
-            const promise = video.play();
-            if (promise && typeof promise.catch === "function") promise.catch(() => {});
+          if (video === master) return;
+          if (Math.abs(video.currentTime - t) > 0.15) {
+            try{video.currentTime = t}catch(e){}
           }
         });
-      }, 750);
+    },1200);
 
-      startTogether();
-
-      // Browsers may block autoplay until the first interaction in unusual settings.
-      const retry = () => {
-        playable.forEach(video => {
-          if (video.paused && !video.ended) {
-            const promise = video.play();
-            if (promise && typeof promise.catch === "function") promise.catch(() => {});
-          }
-        });
-      };
-      document.addEventListener("click", retry, { once: true, passive: true });
-      document.addEventListener("touchstart", retry, { once: true, passive: true });
+      // startTogether();
+    // 用户交互触发播放（浏览器自动播放策略兼容）
+      const retryPlay = ()=>{
+          playable.forEach(v=>v.play().catch(()=>{}))
+      }
+      document.addEventListener("click", retryPlay, { once: true, passive: true });
+      document.addEventListener("touchstart", retryPlay, { once: true, passive: true });
     }
 
-    async function loadVideos(paths) {
+
+    async function loadVideos() {
       const mainGrid = document.getElementById("videoGrid");
       const extensionGrid = document.getElementById("extensionVideoGrid");
-
-      const allVideos = paths
-        .filter(isVideo)
-        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }));
-
-      const extensionVideos = allVideos.filter(isExtensionVideo);
-      const mainVideos = allVideos.filter(path => !isExtensionVideo(path));
-
       mainGrid.innerHTML = "";
       extensionGrid.innerHTML = "";
 
-      if (!mainVideos.length) {
-        mainGrid.innerHTML = '<div class="video-status">No main-result video files were detected in the webpage branch.</div>';
+      if (!ASSETS.mainVideos || ASSETS.mainVideos.length === 0) {
+        mainGrid.innerHTML = '<div class="video-status">请在ASSETS配置主结果视频路径</div>';
       } else {
-        mainVideos.forEach(path => mainGrid.appendChild(createVideoItem(path)));
+        ASSETS.mainVideos.forEach(path => mainGrid.appendChild(createVideoItem(path)));
       }
 
-      if (!extensionVideos.length) {
-        extensionGrid.innerHTML = '<div class="video-status">No waving or hand-shaking video was detected. Check the extension video filenames.</div>';
+      if (!ASSETS.extensionVideos || ASSETS.extensionVideos.length === 0) {
+        extensionGrid.innerHTML = '<div class="video-status">请配置拓展视频路径</div>';
       } else {
-        extensionVideos.forEach(path => extensionGrid.appendChild(createVideoItem(path)));
+        ASSETS.extensionVideos.forEach(path => extensionGrid.appendChild(createVideoItem(path)));
       }
-
-      // Start and periodically correct every video on the page together,
-      // including the two human-human extension clips.
       await synchronizeVideos();
     }
 
@@ -1057,20 +1014,11 @@
     });
 
     /* ==============================================================
-       Boot
+        页面启动函数（现在完全抛弃Github API，不会超时失败）
        ============================================================== */
     (async function bootPage() {
-      try {
-        const paths = await getRepositoryTree();
-        loadPdfFigures(paths);
-        await loadVideos(paths);
-      } catch (error) {
-        console.error("Could not discover repository assets:", error);
-        document.getElementById("videoGrid").innerHTML = '<div class="video-status">Could not load the repository video list. Check the GitHub branch name or API access.</div>';
-        document.getElementById("extensionVideoGrid").innerHTML = '<div class="video-status">Could not load the extension video list.</div>';
-        document.getElementById("frameworkPdf").innerHTML = '<div class="pdf-missing">Could not auto-detect the framework PDF. Set MANUAL_PDF.framework near the bottom of index.html if needed.</div>';
-        document.getElementById("ablationPdf").innerHTML = '<div class="pdf-missing">Could not auto-detect the ablation PDF. Set MANUAL_PDF.ablation near the bottom of index.html if needed.</div>';
-      }
+        loadPdfFigures();
+        await loadVideos();
     })();
   </script>
 </body>
