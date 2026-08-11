@@ -207,6 +207,9 @@
       width:100%;
       height:auto;
       display:block;
+      image-rendering: -webkit-optimize-contrast;
+      image-rendering: crisp-edges;
+      transform: translateZ(0);
     }
     .pdf-loading,
     .pdf-missing {
@@ -761,45 +764,66 @@
        PDF rendering
        ============================================================== */
     async function mountPdf(container, path, frameClass = "comparison") {
-      if (!container || !path) return;
-      container.innerHTML = `<div class="pdf-loading">Loading the framework PDF…</div>`;
-      const url = relativeAssetUrl(path);
+        if (!container || !path) return;
+        container.innerHTML = `<div class="pdf-loading">Loading the framework PDF…</div>`;
+        const url = relativeAssetUrl(path);
     
-      try {
-        const loadingTask = pdfjsLib.getDocument(url);
-        const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1);
+        try {
+            const loadingTask = pdfjsLib.getDocument(url);
+            const pdf = await loadingTask.promise;
+            const page = await pdf.getPage(1);
     
-        // 获取PDF原生尺寸
-        const baseViewport = page.getViewport({ scale: 1 });
+            // 设备像素比，高清屏幕关键
+            const dpr = window.devicePixelRatio ?? 1;
+            // 限制最大渲染倍数，防止4k屏幕渲染过大画布卡顿
+            const MAX_SCALE = 2.5;
     
-        // 创建画布
-        container.innerHTML = "";
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        container.appendChild(canvas);
+            container.innerHTML = "";
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            container.appendChild(canvas);
     
-        // 渲染函数：根据容器实时宽度自动缩放PDF页面
-        function renderCanvas() {
-          const boxWidth = container.clientWidth;
-          const scale = boxWidth / baseViewport.width;
-          const viewport = page.getViewport({ scale });
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
+            let resizeHandler;
     
-          page.render({
-            canvasContext: ctx,
-            viewport: viewport
-          });
+            function renderCanvas() {
+                const boxWidth = container.clientWidth;
+                // 基础缩放：填满容器宽度
+                const baseViewport = page.getViewport({ scale: 1 });
+                const baseScale = boxWidth / baseViewport.width;
+                // 叠加设备像素倍率
+                const renderScale = Math.min(baseScale * dpr, MAX_SCALE);
+                const viewport = page.getViewport({ scale: renderScale });
+    
+                // canvas真实物理像素大小
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                // css显示大小(逻辑像素)
+                canvas.style.width = boxWidth + "px";
+                canvas.style.height = "auto";
+                canvas.style.display = "block";
+    
+                // 高清图像平滑
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = "high";
+    
+                // 高质量渲染意图 print代表矢量文字锐利
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport,
+                    renderIntent: "print"
+                });
+            }
+    
+            resizeHandler = renderCanvas;
+            window.addEventListener("resize", resizeHandler);
+            container._resizeCb = resizeHandler;
+    
+            renderCanvas();
+    
+        } catch (err) {
+            container.innerHTML = `<div class="pdf-missing">Failed‑to‑load PDF: ${path}</div>`;
+            console.error(err);
         }
-    
-        renderCanvas();
-        window.addEventListener("resize", renderCanvas);
-    
-      } catch (err) {
-        container.innerHTML = `<div class="pdf-missing">Failed‑to‑load PDF: ${path}</div>`;
-        console.error(err);
-      }
     }
 
     function makePdfFigure(path, caption = "") {
