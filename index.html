@@ -693,35 +693,35 @@
             "static/videos/handshake.mp4"
         ]
     };
-    const MANUAL_PDF = {
-      framework: "",
-      ablation: ""
-    };
+    // const MANUAL_PDF = {
+    //   framework: "",
+    //   ablation: ""
+    // };
 
     /*
       Matching hints for your figure PDF filenames.
       The matching is intentionally flexible because the uploaded figure
       filenames may differ from the paper's figure numbers.
     */
-    const FIGURE_HINTS = {
-      framework: ["framework", "overview", "architecture", "method", "fig2", "figure2"],
-      ablation: ["ablation", "fig5", "figure5"],
-      comparison: ["comparison", "compare", "baseline", "dreamhoi", "sota", "fig3", "figure3", "fig4", "figure4"],
-      supplementary: ["supp", "supply", "supplement"]
-    };
+    // const FIGURE_HINTS = {
+    //   framework: ["framework", "overview", "architecture", "method", "fig2", "figure2"],
+    //   ablation: ["ablation", "fig5", "figure5"],
+    //   comparison: ["comparison", "compare", "baseline", "dreamhoi", "sota", "fig3", "figure3", "fig4", "figure4"],
+    //   supplementary: ["supp", "supply", "supplement"]
+    // };
 
-    const VIDEO_EXTENSIONS = [".mp4", ".webm"];
+    const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v", ".ogg"];
 
     /*
       Human-human interaction clips shown in the paper extension.
       These filename hints keep the waving and hand-shaking clips out of
       the main Results grid and place them in the extension section.
     */
-    const EXTENSION_VIDEO_HINTS = [
-      "wave", "waving",
-      "shake hand", "shake hands", "shaking hand", "shaking hands",
-      "handshake", "hand shake"
-    ];
+    // const EXTENSION_VIDEO_HINTS = [
+    //   "wave", "waving",
+    //   "shake hand", "shake hands", "shaking hand", "shaking hands",
+    //   "handshake", "hand shake"
+    // ];
 
     function lowerPath(path) {
       try { return decodeURIComponent(path).toLowerCase(); }
@@ -733,13 +733,13 @@
       return VIDEO_EXTENSIONS.some(ext => p.endsWith(ext));
     }
 
-    function isExtensionVideo(path) {
-      const normalized = filenameToPrompt(path).toLowerCase();
-      const raw = lowerPath(path).replace(/[_-]+/g, " ");
-      return EXTENSION_VIDEO_HINTS.some(hint =>
-        normalized.includes(hint) || raw.includes(hint)
-      );
-    }
+    // function isExtensionVideo(path) {
+    //   const normalized = filenameToPrompt(path).toLowerCase();
+    //   const raw = lowerPath(path).replace(/[_-]+/g, " ");
+    //   return EXTENSION_VIDEO_HINTS.some(hint =>
+    //     normalized.includes(hint) || raw.includes(hint)
+    //   );
+    // }
 
     function isPdf(path) {
       return lowerPath(path).endsWith(".pdf");
