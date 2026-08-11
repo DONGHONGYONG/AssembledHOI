@@ -191,17 +191,10 @@
       width: 100%;
     }
 
-    /* .pdf-frame {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      border: 1px solid #e6e8ed;
-      border-radius: 10px;
-      background: #fafafa;
-      height: auto;
-      display:flex;
-      justify-content:center;
-    } */
+    .pdf-figure + .pdf-figure {
+      margin-top: 34px;
+    }
+
     .pdf-frame {
       position: relative;
       width: 100%;
@@ -210,15 +203,23 @@
       border-radius: 10px;
       background: #fafafa;
       height: auto;
-      /* 删除display:flex，flex会干扰canvas原生尺寸 */
+      min-height: 150px;
     }
-    .pdf-frame canvas{
-      width:100%;
-      height:auto;
-      display:block;
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-      transform: translateZ(0);
+
+    .pdf-frame.is-ready {
+      min-height: 0;
+    }
+
+    .pdf-frame.ablation {
+      width: 50%;
+      margin: 0 auto;
+    }
+
+    .pdf-frame canvas {
+      width: 100%;
+      height: auto;
+      display: block;
+      image-rendering: auto;
     }
     .pdf-loading,
     .pdf-missing {
@@ -256,6 +257,8 @@
     .video-item {
       min-width: 0;
       text-align: center;
+      display: flex;
+      flex-direction: column;
     }
 
     .video-shell {
@@ -277,7 +280,8 @@
 
     .video-prompt {
       width: 92%;
-      min-height: 3.25em;   /* reserve roughly two lines */
+      min-height: 4.65em;   /* reserve three lines for the final full prompt */
+      flex: 1;
       margin: 10px auto 0;
       color: #3f4755;
       font-family: Georgia, "Times New Roman", serif;
@@ -363,6 +367,8 @@
 
     .comparison-block + .comparison-block { margin-top: 52px; }
 
+    #dreamhoiComparisonFigure { margin-top: 34px; }
+
     .comparison-subtitle {
       margin: 0 0 18px;
       text-align: center;
@@ -438,7 +444,7 @@
       .affiliations-clean { font-size: 11px; }
       .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
       .extension-video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
-      .video-prompt { font-size: 13px; min-height: 3.2em; width: 96%; }
+      .video-prompt { font-size: 13px; min-height: 4.65em; width: 96%; }
       .abstract-full { text-align: left; }
     }
 
@@ -507,8 +513,7 @@
 
     <!-- ============================================================
          FRAMEWORK OVERVIEW
-         The PDF is discovered from the webpage branch at runtime.
-         If your filename is unusual, edit FIGURE_HINTS.framework below.
+         The figure is rendered from its explicit ASSETS.pdf path.
          ============================================================ -->
     <section id="framework" class="page-section">
       <div class="page-container">
@@ -526,13 +531,12 @@
     </section>
 
     <!-- ============================================================
-         RESULTS — all videos in the webpage branch are loaded here.
-         Filenames are converted into temporary prompts automatically.
+         RESULTS — videos come from the explicit ASSETS.mainVideos list.
+         Filenames become prompts until an explicit prompt is supplied.
          ============================================================ -->
     <section id="results" class="page-section">
       <div class="page-container">
         <h2 class="section-title">Results</h2>
-        <p class="section-intro">111</p>
 
         <div class="video-grid" id="videoGrid">
           <div class="video-status">Loading videos…</div>
@@ -577,6 +581,7 @@
           <p class="comparison-copy">
             When given complex human-object interaction prompts, such as “a man in a hoodie, camouflage jacket, joggers and trainers carrying a backpack”, methods like DreamFusion, Magic3D and TextMesh produced results with insufficient physical plausibility, exhibiting noticeable structural distortions. Although InterFusion and InteractAnything generate geometrically coherent human-object interactions, like the others, it suffers from textures that lack richness and visual fidelity compared to our approach. Furthermore, while DreamHOI relies on UV maps to generate diverse styles, our approach eliminates this dependency. In terms of text prompt alignment, our method also demonstrates clear superiority over all six baseline approaches.
           </p>
+          <div id="dreamhoiComparisonFigure"></div>
         </div>
 
         <!-- <div class="comparison-block">
@@ -653,102 +658,55 @@
 
   <script>
     /* ==============================================================
-       Repository asset discovery
-       --------------------------------------------------------------
-       This page discovers PDFs and videos directly from the public
-       "webpage" branch, so newly-added videos can appear automatically.
-       If you later rename the branch, change REPO_BRANCH only.
-       ============================================================== */
-    const REPO_OWNER = "DONGHONGYONG";
-    const REPO_NAME = "AssembledHOI";
-    const REPO_BRANCH = "webpage";
-
-    /*
-      Optional manual overrides.
-      Leave a value empty to let the page auto-detect the matching PDF.
-      If auto-detection ever selects the wrong file, put the exact repository
-      path here, for example: "static/pdfs/framework.pdf".
-    */
-    /* ==============================================================
-       静态资源手动配置（移除GitHub远程API，根治视频加载失败）
-       只需要在这里填写你的静态文件路径，不再请求外网接口
+       Explicit repository-relative asset configuration.
+       Video entries may later become { path, prompt } objects; until then,
+       the visible prompt is generated from the filename.
        ============================================================== */
     const ASSETS = {
-        // 高清PDF示意图路径
-        pdf:{
-            framework:"static/pdfs/framework.pdf",
-            ablation:"static/pdfs/ablation.pdf",
-            comparison:"static/pdfs/comparison.pdf",
-            supplementary:""
-        },
-        // 主结果视频
-        mainVideos:[
-            "static/videos/xxx1.mp4",
-            "static/videos/xxx2.mp4",
-            "static/videos/xxx3.mp4"
-        ],
-        // 拓展人机交互视频（握手、挥手）
-        extensionVideos:[
-            "static/videos/wave1.mp4",
-            "static/videos/handshake.mp4"
-        ]
+      // Figure PDFs use explicit repository-relative paths.
+      pdf: {
+        framework: "static/paper_images/framework.pdf",
+        ablation: "static/paper_images/ablation.pdf",
+        comparison: "static/paper_images/duibi.pdf",
+        dreamhoiComparison: "static/paper_images/SM_compa_dreamhoi_new.pdf",
+        supplementary: ""
+      },
+      // Main HOI results. Keep this list explicit so renamed/added files are intentional.
+      mainVideos: [
+        // Musical instruments
+        "static/videos/playing_a_guitar1.mp4",
+        "static/videos/playing_a_guitar2.mp4",
+        "static/videos/playing_the_trumpet.mp4",
+        // Coffee interactions
+        "static/videos/drinking_coffee.mp4",
+        "static/videos/holding_a_cup_of_coffee1.mp4",
+        "static/videos/holding_a_cup_of_coffee2.mp4",
+        // Shield interactions
+        "static/videos/holding_a_shield1.mp4",
+        "static/videos/holding_a_shield2.mp4",
+        // Sitting interactions
+        "static/videos/sitting_on_a_slipper_chair.mp4",
+        "static/videos/sitting_on_a_swivel_chair.mp4",
+        "static/videos/sitting_on_a_bench.mp4",
+        "static/videos/sitting_on_a_bar_chair.mp4",
+        "static/videos/sitting_on_a_sofa.mp4",
+        "static/videos/sitting_on_a_ball.mp4",
+        // Riding interactions
+        "static/videos/riding_a_motorcycle.mp4",
+        "static/videos/riding_a_horse.mp4",
+        // Sports interactions
+        "static/videos/playing_basketball.mp4",
+        "static/videos/jumping_a_skateboard.mp4",
+        // Other interactions
+        "static/videos/carrying_a_backpack.mp4",
+        "static/videos/opening_a_wardrobe.mp4"
+      ],
+      // Human-human extension results.
+      extensionVideos: [
+        "static/videos/wave.mp4",
+        "static/videos/shaking_hand.mp4"
+      ]
     };
-    // const MANUAL_PDF = {
-    //   framework: "",
-    //   ablation: ""
-    // };
-
-    /*
-      Matching hints for your figure PDF filenames.
-      The matching is intentionally flexible because the uploaded figure
-      filenames may differ from the paper's figure numbers.
-    */
-    // const FIGURE_HINTS = {
-    //   framework: ["framework", "overview", "architecture", "method", "fig2", "figure2"],
-    //   ablation: ["ablation", "fig5", "figure5"],
-    //   comparison: ["comparison", "compare", "baseline", "dreamhoi", "sota", "fig3", "figure3", "fig4", "figure4"],
-    //   supplementary: ["supp", "supply", "supplement"]
-    // };
-
-    const VIDEO_EXTENSIONS = [".mp4", ".webm", ".mov", ".m4v", ".ogg"];
-
-    /*
-      Human-human interaction clips shown in the paper extension.
-      These filename hints keep the waving and hand-shaking clips out of
-      the main Results grid and place them in the extension section.
-    */
-    // const EXTENSION_VIDEO_HINTS = [
-    //   "wave", "waving",
-    //   "shake hand", "shake hands", "shaking hand", "shaking hands",
-    //   "handshake", "hand shake"
-    // ];
-
-    function lowerPath(path) {
-      try { return decodeURIComponent(path).toLowerCase(); }
-      catch (_) { return path.toLowerCase(); }
-    }
-
-    function isVideo(path) {
-      const p = lowerPath(path);
-      return VIDEO_EXTENSIONS.some(ext => p.endsWith(ext));
-    }
-
-    // function isExtensionVideo(path) {
-    //   const normalized = filenameToPrompt(path).toLowerCase();
-    //   const raw = lowerPath(path).replace(/[_-]+/g, " ");
-    //   return EXTENSION_VIDEO_HINTS.some(hint =>
-    //     normalized.includes(hint) || raw.includes(hint)
-    //   );
-    // }
-
-    function isPdf(path) {
-      return lowerPath(path).endsWith(".pdf");
-    }
-
-    function isPaperPdf(path) {
-      const p = lowerPath(path);
-      return p.includes("assembledhoi_eccv26") || p.includes("assembledhoi_supply_eccv26");
-    }
 
     function filenameToPrompt(path) {
       let name = path.split("/").pop() || path;
@@ -757,6 +715,7 @@
       name = name
         .replace(/[_-]+/g, " ")
         .replace(/^\s*\d+[\s._-]*/, "")
+        .replace(/([a-z])([0-9]+)$/i, "$1 $2")
         .replace(/\s+/g, " ")
         .trim();
       return name || "Text prompt";
@@ -767,71 +726,100 @@
     }
 
     /* ==============================================================
-       PDF渲染函数【最终高清修复版，解决放大模糊】
+       Render a one-page figure PDF at the container's CSS width.
+       A 2x-3x backing canvas keeps text and vector lines crisp, while the
+       CSS dimensions preserve the PDF's original aspect ratio responsively.
        ============================================================== */
-    async function mountPdf(container, path, frameClass = "comparison") {
-        if (!container || !path) return;
-        // 销毁旧的resize监听，防止多次绑定造成画布模糊
-        if(container._resizeCb){
-            window.removeEventListener("resize",container._resizeCb);
-            delete container._resizeCb;
+    async function mountPdf(container, path, label = "figure") {
+      if (!container || !path) return;
+
+      container._pdfCleanup?.();
+      container.classList.remove("is-ready");
+      container.innerHTML = `<div class="pdf-loading">Loading ${label}…</div>`;
+
+      try {
+        const loadingTask = pdfjsLib.getDocument({
+          url: relativeAssetUrl(path),
+          cMapUrl: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
+          cMapPacked: true
+        });
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        const baseViewport = page.getViewport({ scale: 1 });
+
+        container.innerHTML = "";
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { alpha: false });
+        container.appendChild(canvas);
+
+        let queuedWidth = 0;
+        let lastRenderedWidth = 0;
+        let rendering = false;
+        let disposed = false;
+
+        async function renderQueuedWidth() {
+          if (rendering || disposed) return;
+          rendering = true;
+
+          while (queuedWidth && !disposed) {
+            const cssWidth = queuedWidth;
+            queuedWidth = 0;
+            const cssScale = cssWidth / baseViewport.width;
+            const cssViewport = page.getViewport({ scale: cssScale });
+            const outputScale = Math.min(Math.max(window.devicePixelRatio || 1, 2), 3);
+            const renderViewport = page.getViewport({ scale: cssScale * outputScale });
+
+            canvas.width = Math.ceil(renderViewport.width);
+            canvas.height = Math.ceil(renderViewport.height);
+            canvas.style.width = `${cssWidth}px`;
+            canvas.style.height = `${cssViewport.height}px`;
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = "high";
+
+            await page.render({
+              canvasContext: ctx,
+              viewport: renderViewport,
+              intent: "print"
+            }).promise;
+
+            lastRenderedWidth = cssWidth;
+            container.classList.add("is-ready");
+          }
+
+          rendering = false;
         }
 
-        container.innerHTML = `<div class="pdf-loading">Loading the framework PDF…</div>`;
-        const url = relativeAssetUrl(path);
-    
-        try {
-            const loadingTask = pdfjsLib.getDocument({
-                url:url,
-                cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
-                cMapPacked:true
-            });
-            const pdf = await loadingTask.promise;
-            const page = await pdf.getPage(1);
-    
-            const dpr = window.devicePixelRatio ?? 1;
-            const MAX_SCALE = 2.5;
-    
-            container.innerHTML = "";
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            container.appendChild(canvas);
-    
-            let resizeHandler;
-    
-            function renderCanvas() {
-                // 强制读取容器宽度
-                const boxWidth = container.clientWidth || 800;
-                const baseViewport = page.getViewport({ scale: 1 });
-                const baseScale = boxWidth / baseViewport.width;
-                const renderScale = Math.min(baseScale * dpr, MAX_SCALE);
-                const viewport = page.getViewport({ scale: renderScale });
-    
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                canvas.style.width = boxWidth + "px";
-                canvas.style.height = (boxWidth*(viewport.height/viewport.width)) + "px";
-                canvas.style.display = "block";
-    
-                ctx.imageSmoothingEnabled = true;
-                ctx.imageSmoothingQuality = "high";
-    
-                page.render({
-                    canvasContext: ctx,
-                    viewport: viewport,
-                    renderIntent: "print"
-                });
-            }
-    
-            resizeHandler = renderCanvas;
-            container._resizeCb = resizeHandler;
-            window.addEventListener("resize", resizeHandler);
-            renderCanvas();
-    
-        } catch (err) {
-            container.innerHTML = `<div class="pdf-missing">Failed‑to‑load PDF: ${path}</div>`;
-            console.error(err);
+        function requestRender() {
+          const width = Math.round(container.clientWidth);
+          if (!width || Math.abs(width - lastRenderedWidth) < 2) return;
+          queuedWidth = width;
+          renderQueuedWidth().catch(err => {
+            rendering = false;
+            console.error(`Failed to render ${path}`, err);
+          });
         }
+
+        let resizeObserver;
+        if ("ResizeObserver" in window) {
+          resizeObserver = new ResizeObserver(requestRender);
+          resizeObserver.observe(container);
+        } else {
+          window.addEventListener("resize", requestRender, { passive: true });
+        }
+
+        container._pdfCleanup = () => {
+          disposed = true;
+          resizeObserver?.disconnect();
+          window.removeEventListener("resize", requestRender);
+          pdf.destroy();
+        };
+
+        requestRender();
+      } catch (err) {
+        container.classList.remove("is-ready");
+        container.innerHTML = `<div class="pdf-missing">Failed to load ${label}: ${path}</div>`;
+        console.error(err);
+      }
     }
 
     function makePdfFigure(path, caption = "") {
@@ -840,7 +828,7 @@
 
       const frame = document.createElement("div");
       frame.className = "pdf-frame comparison";
-      mountPdf(frame, path, "comparison");
+      mountPdf(frame, path, "comparison figure");
       figure.appendChild(frame);
 
       if (caption) {
@@ -852,42 +840,44 @@
       return figure;
     }
 
-    function bestPdf(paths, key) {
-      if (MANUAL_PDF[key]) return MANUAL_PDF[key];
-      const candidates = paths.filter(path => isPdf(path) && !isPaperPdf(path));
-      const hints = FIGURE_HINTS[key] || [];
-      return candidates
-        .map(path => ({ path, score: scoreByHints(path, hints) }))
-        .filter(item => item.score > 0)
-        .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path))[0]?.path || "";
-    }
-
     function loadPdfFigures() {
       const framework = document.getElementById("frameworkPdf");
-      if (ASSETS.pdf.framework) mountPdf(framework, ASSETS.pdf.framework, "framework");
+      if (ASSETS.pdf.framework) mountPdf(framework, ASSETS.pdf.framework, "framework figure");
       else framework.innerHTML = '<div class="pdf-missing">请配置ASSETS.pdf.framework路径</div>';
 
       const ablation = document.getElementById("ablationPdf");
-      if (ASSETS.pdf.ablation) mountPdf(ablation, ASSETS.pdf.ablation, "ablation");
+      if (ASSETS.pdf.ablation) mountPdf(ablation, ASSETS.pdf.ablation, "ablation figure");
       else ablation.innerHTML = '<div class="pdf-missing">请配置ASSETS.pdf.ablation路径</div>';
 
       const mainContainer = document.getElementById("mainComparisonFigures");
+      const dreamhoiContainer = document.getElementById("dreamhoiComparisonFigure");
       const suppContainer = document.getElementById("suppComparisonFigures");
-      mainContainer.innerHTML = "";
-      suppContainer.innerHTML = "";
+      if (mainContainer) mainContainer.innerHTML = "";
+      if (dreamhoiContainer) dreamhoiContainer.innerHTML = "";
+      if (suppContainer) suppContainer.innerHTML = "";
 
-      if(ASSETS.pdf.comparison){
-          mainContainer.appendChild(makePdfFigure(ASSETS.pdf.comparison));
+      if (mainContainer && ASSETS.pdf.comparison) {
+        mainContainer.appendChild(makePdfFigure(ASSETS.pdf.comparison));
       }
-      if(ASSETS.pdf.supplementary){
-          suppContainer.appendChild(makePdfFigure(ASSETS.pdf.supplementary));
+      if (dreamhoiContainer && ASSETS.pdf.dreamhoiComparison) {
+        dreamhoiContainer.appendChild(makePdfFigure(
+          ASSETS.pdf.dreamhoiComparison,
+          "Qualitative comparisons with DreamHOI (default). Since DreamHOI requires UV texture maps to achieve diverse styles, we use the default style without texture maps for comparison, which better shows the superiority of our method."
+        ));
+      }
+      if (suppContainer && ASSETS.pdf.supplementary) {
+        suppContainer.appendChild(makePdfFigure(ASSETS.pdf.supplementary));
       }
     }
 
     /* ==============================================================
        Video模块 修复加载失败、黑屏、解码失败
        ============================================================== */
-    function createVideoItem(path) {
+    function createVideoItem(entry) {
+      const path = typeof entry === "string" ? entry : entry.path;
+      const promptText = typeof entry === "string"
+        ? filenameToPrompt(path)
+        : (entry.prompt?.trim() || filenameToPrompt(path));
       const article = document.createElement("article");
       article.className = "video-item";
 
@@ -898,24 +888,25 @@
       video.className = "sync-video";
       video.src = relativeAssetUrl(path);
       video.muted = true;
+      video.autoplay = true;
       video.playsInline = true;
       video.preload = "metadata"; // 仅预加载元数据，解决一次性加载卡死
       video.disablePictureInPicture = true;
       video.setAttribute("muted", "");
       video.setAttribute("playsinline", "");
       video.setAttribute("webkit-playsinline", "");
-      video.setAttribute("aria-label", filenameToPrompt(path));
+      video.setAttribute("aria-label", promptText);
 
       // 视频加载失败监听
-      video.onerror = function(){
-          shell.innerHTML = `<span style="color:#888;padding:10px">视频加载失败，请检查文件路径/视频编码(H.264‑AAC mp4)</span>`
-      }
+      video.onerror = function() {
+        shell.innerHTML = `<span style="color:#888;padding:10px">视频加载失败，请检查文件路径/视频编码(H.264 MP4)</span>`;
+      };
 
       shell.appendChild(video);
 
       const prompt = document.createElement("div");
       prompt.className = "video-prompt";
-      prompt.textContent = filenameToPrompt(path);
+      prompt.textContent = promptText;
 
       article.appendChild(shell);
       article.appendChild(prompt);
@@ -963,16 +954,16 @@
         playable.forEach(video => {
           if (video === master) return;
           if (Math.abs(video.currentTime - t) > 0.15) {
-            try{video.currentTime = t}catch(e){}
+            try { video.currentTime = t; } catch (_) {}
           }
         });
-    },1200);
+      }, 1200);
 
-      // startTogether();
-    // 用户交互触发播放（浏览器自动播放策略兼容）
-      const retryPlay = ()=>{
-          playable.forEach(v=>v.play().catch(()=>{}))
-      }
+      startTogether();
+      // Fallback for browsers that still require a user gesture.
+      const retryPlay = () => {
+        playable.forEach(video => video.play().catch(() => {}));
+      };
       document.addEventListener("click", retryPlay, { once: true, passive: true });
       document.addEventListener("touchstart", retryPlay, { once: true, passive: true });
     }
@@ -987,13 +978,13 @@
       if (!ASSETS.mainVideos || ASSETS.mainVideos.length === 0) {
         mainGrid.innerHTML = '<div class="video-status">请在ASSETS配置主结果视频路径</div>';
       } else {
-        ASSETS.mainVideos.forEach(path => mainGrid.appendChild(createVideoItem(path)));
+        ASSETS.mainVideos.forEach(entry => mainGrid.appendChild(createVideoItem(entry)));
       }
 
       if (!ASSETS.extensionVideos || ASSETS.extensionVideos.length === 0) {
         extensionGrid.innerHTML = '<div class="video-status">请配置拓展视频路径</div>';
       } else {
-        ASSETS.extensionVideos.forEach(path => extensionGrid.appendChild(createVideoItem(path)));
+        ASSETS.extensionVideos.forEach(entry => extensionGrid.appendChild(createVideoItem(entry)));
       }
       await synchronizeVideos();
     }
