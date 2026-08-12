@@ -210,11 +210,6 @@
       min-height: 0;
     }
 
-    .pdf-frame.ablation {
-      width: 50%;
-      margin: 0 auto;
-    }
-
     .pdf-frame canvas {
       width: 100%;
       height: auto;
@@ -304,10 +299,9 @@
     /* ---------- Human-human extension ---------- */
     .extension-video-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 340px));
-      justify-content: center;
-      gap: 24px;
-      width: 100%;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 33px 18px;
+      width: calc(50% - 9px);
       margin: 0 auto 24px;
     }
 
@@ -352,6 +346,8 @@
       color: #596273;
       font-size: 12px;
       font-weight: 800;
+      text-transform: none;
+      letter-spacing: normal;
     }
 
     .metric-table th:first-child,
@@ -365,18 +361,135 @@
       font-weight: 800;
     }
 
+    .supp-table-block {
+      margin: 46px 0 54px;
+    }
+
+    .subsection-title {
+      margin: 0 0 18px;
+      text-align: center;
+      color: #263042;
+      font-size: 24px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -.025em;
+    }
+
+    .supp-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #e2e5ea;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .supp-table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #475467;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .configuration-table {
+      min-width: 1000px;
+      font-size: 13px;
+    }
+
+    .user-study-table { min-width: 900px; }
+
+    .supp-table th,
+    .supp-table td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #eceef2;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .supp-table th {
+      background: #fafafa;
+      color: #596273;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .supp-table th:first-child,
+    .supp-table td:first-child {
+      padding-left: 18px;
+      text-align: left;
+      font-weight: 750;
+    }
+
+    .supp-table.configuration-table th,
+    .supp-table.configuration-table td {
+      padding: 14px;
+    }
+
+    .supp-table.configuration-table th {
+      font-size: 12px;
+    }
+
+    .supp-table.configuration-table th:first-child,
+    .supp-table.configuration-table td:first-child {
+      padding-left: 20px;
+    }
+
+    .supp-table tbody tr:last-child td { border-bottom: 0; }
+
+    .supp-table .ours-column {
+      background: #f6f5ff;
+      color: #312e81;
+      font-weight: 800;
+    }
+
+    .table-description {
+      max-width: 980px;
+      margin: 16px auto 0;
+      color: #667085;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .user-study-block {
+      margin-top: 52px;
+      padding-top: 52px;
+      border-top: 1px solid var(--line-clean);
+    }
+
+    .limitation-block {
+      margin-top: 52px;
+      padding-top: 52px;
+      border-top: 1px solid var(--line-clean);
+    }
+
+    .limitation-copy {
+      max-width: 980px;
+      margin: 28px auto 0;
+      color: #525c6c;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      line-height: 1.72;
+      text-align: center;
+    }
+
+    .limitation-copy p { margin: 0; }
+
     .comparison-block + .comparison-block { margin-top: 52px; }
 
     #dreamhoiComparisonFigure { margin-top: 34px; }
 
     .comparison-subtitle {
-      margin: 0 0 18px;
+      margin: 0 0 34px;
       text-align: center;
-      font-size: 20px;
-      line-height: 1.35;
-      font-weight: 750;
-      letter-spacing: -.02em;
-      color: #263042;
+      font-size: clamp(31px, 3.6vw, 43px);
+      line-height: 1.12;
+      font-weight: 800;
+      letter-spacing: -.04em;
+      color: #172033;
     }
 
     .comparison-copy,
@@ -388,6 +501,84 @@
       font-size: 16px;
       line-height: 1.72;
       text-align: center;
+    }
+
+    /* ---------- Ablation figure and table ---------- */
+    .ablation-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+    }
+
+    .ablation-layout > * {
+      min-width: 0;
+    }
+
+    .ablation-layout .pdf-frame.ablation {
+      width: 100%;
+      margin: 0;
+    }
+
+    .ablation-table-wrap {
+      min-width: 0;
+      overflow-x: auto;
+      border: 1px solid #e2e5ea;
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .ablation-table {
+      width: 100%;
+      min-width: 520px;
+      border-collapse: collapse;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .ablation-table th,
+    .ablation-table td {
+      height: 43px;
+      padding: 8px 7px;
+      border-bottom: 1px solid #eceef2;
+      text-align: center;
+      color: #475467;
+      white-space: nowrap;
+    }
+
+    .ablation-table th {
+      background: #fafafa;
+      color: #596273;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .ablation-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .ablation-table .full-model td {
+      background: #f6f5ff;
+      color: #312e81;
+      font-weight: 800;
+    }
+
+    .ablation-check {
+      color: var(--accent-clean);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .ablation-table-caption {
+      margin: 15px auto 0;
+      text-align: center;
+      color: #667085;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 14px;
+      line-height: 1.68;
     }
 
     /* ---------- Citation ---------- */
@@ -433,6 +624,7 @@
     @media (max-width: 980px) {
       :root { --section-gap: 70px; }
       .video-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .extension-video-grid { width: calc(66.6667% - 6px); }
     }
 
     @media (max-width: 720px) {
@@ -443,14 +635,19 @@
       .authors-clean { font-size: 14px; gap: 4px 11px; }
       .affiliations-clean { font-size: 11px; }
       .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 14px; }
-      .extension-video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 14px; }
+      .extension-video-grid { width: 100%; gap: 28px 14px; }
       .video-prompt { font-size: 13px; min-height: 4.65em; width: 96%; }
       .abstract-full { text-align: left; }
+      .ablation-layout { grid-template-columns: 1fr; }
+      .ablation-table { min-width: 500px; }
+      .subsection-title { font-size: 22px; }
+      .table-description { text-align: left; }
+      .limitation-copy { text-align: left; }
     }
 
     @media (max-width: 460px) {
       .video-grid { grid-template-columns: 1fr; }
-      .extension-video-grid { grid-template-columns: 1fr; max-width: 340px; }
+      .extension-video-grid { grid-template-columns: 1fr; max-width: 340px; gap: 28px 14px; }
       .video-shell { max-width: 320px; margin: 0 auto; }
       .video-prompt { max-width: 300px; }
     }
@@ -556,10 +753,10 @@
             <thead>
               <tr>
                 <th>Method</th>
-                <th>CLIP ↑</th>
-                <th>GPT-4V Select ↑</th>
-                <th>R-Collision ↓</th>
-                <th>R-Contact ↑</th>
+                <th>CLIP score ↑</th>
+                <th>GPT-4V select (%) ↑</th>
+                <th>R-Collision (%) ↓</th>
+                <th>R-Contact (%) ↑</th>
                 <th>Time ↓</th>
               </tr>
             </thead>
@@ -573,6 +770,35 @@
               <tr class="ours-row"><td>AssembledHOI</td><td>0.3835</td><td>53.3%</td><td>13.6%</td><td>53.7%</td><td>25 min</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div class="supp-table-block">
+          <h3 class="comparison-subtitle">Configuration Settings Comparison</h3>
+          <div class="supp-table-wrap">
+            <table class="supp-table configuration-table">
+              <thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>DreamFusion</th>
+                  <th>Magic3D</th>
+                  <th>TextMesh</th>
+                  <th>InterFusion</th>
+                  <th>DreamHOI</th>
+                  <th class="ours-column">Ours (vGPU)</th>
+                  <th class="ours-column">Ours (RTX 3090)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Batch Size</td><td>8</td><td>8</td><td>4</td><td>1</td><td>8</td><td class="ours-column">4</td><td class="ours-column">4</td></tr>
+                <tr><td>Resolution</td><td>512 × 512</td><td>512 × 512</td><td>512 × 512</td><td>512 × 512</td><td>512 × 512</td><td class="ours-column">1024 × 1024</td><td class="ours-column">1024 × 1024</td></tr>
+                <tr><td>Epochs</td><td>10,000</td><td>10,000</td><td>10,000</td><td>10,000</td><td>10,000</td><td class="ours-column">2,400</td><td class="ours-column">2,400</td></tr>
+                <tr><td>GPU</td><td>vGPU-32GB</td><td>vGPU-32GB</td><td>vGPU-32GB</td><td>vGPU-32GB</td><td>vGPU-32GB</td><td class="ours-column">vGPU-32GB</td><td class="ours-column">RTX 3090</td></tr>
+                <tr><td>Memory</td><td>10 GB</td><td>15 GB</td><td>15 GB</td><td>29 GB</td><td>31 GB</td><td class="ours-column">17 GB</td><td class="ours-column">17 GB</td></tr>
+                <tr><td>Time ↓</td><td>1.8 hours</td><td>2.0 hours</td><td>1.5 hours</td><td>4.5 hours</td><td>11.5 hours</td><td class="ours-column">30 minutes</td><td class="ours-column">25 minutes</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-description">Configuration settings used for the baseline comparison. All baselines were evaluated under consistent experimental conditions; our method was additionally tested on a single RTX 3090 to demonstrate its efficiency under a more constrained hardware setting.</p>
         </div>
 
         <div class="comparison-block">
@@ -601,12 +827,42 @@
       <div class="page-container">
         <h2 class="section-title">Ablation Study</h2>
 
-        <figure class="pdf-figure">
-          <div class="pdf-frame ablation" id="ablationPdf">
-            <div class="pdf-loading">Loading the ablation PDF…</div>
+        <div class="ablation-layout">
+          <figure class="pdf-figure">
+            <div class="pdf-frame ablation" id="ablationPdf">
+              <div class="pdf-loading">Loading the ablation PDF…</div>
+            </div>
+            <figcaption class="figure-caption">Qualitative ablation results for the proposed components.</figcaption>
+          </figure>
+
+          <div>
+            <div class="ablation-table-wrap">
+              <table class="ablation-table">
+                <thead>
+                  <tr>
+                    <th>AAS</th>
+                    <th>PALR</th>
+                    <th>PGTE</th>
+                    <th>CLIP ↑</th>
+                    <th>R-Collision ↓</th>
+                    <th>R-Contact ↑</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td></td><td></td><td></td><td>0.2729</td><td>22.7%</td><td>14.9%</td></tr>
+                  <tr><td class="ablation-check">✓</td><td></td><td></td><td>0.3365</td><td>18.5%</td><td>28.5%</td></tr>
+                  <tr><td></td><td class="ablation-check">✓</td><td></td><td>0.3006</td><td>19.8%</td><td>31.8%</td></tr>
+                  <tr><td></td><td></td><td class="ablation-check">✓</td><td>0.2939</td><td>21.3%</td><td>21.5%</td></tr>
+                  <tr><td class="ablation-check">✓</td><td class="ablation-check">✓</td><td></td><td>0.3652</td><td>15.2%</td><td>46.1%</td></tr>
+                  <tr><td class="ablation-check">✓</td><td></td><td class="ablation-check">✓</td><td>0.3581</td><td>16.4%</td><td>35.3%</td></tr>
+                  <tr><td></td><td class="ablation-check">✓</td><td class="ablation-check">✓</td><td>0.3290</td><td>18.7%</td><td>38.2%</td></tr>
+                  <tr class="full-model"><td class="ablation-check">✓</td><td class="ablation-check">✓</td><td class="ablation-check">✓</td><td>0.3835</td><td>13.6%</td><td>53.7%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="ablation-table-caption">Quantitative results of the ablation studies.</p>
           </div>
-          <figcaption class="figure-caption">Qualitative ablation results for the proposed components.</figcaption>
-        </figure>
+        </div>
 
         <p class="ablation-copy">
           The results show that AAS alone achieves a significant improvement of +6.36% in the CLIP score, highlighting its critical role in selecting semantically meaningful anchors for human-object interaction. When combined with PALR, the performance increases further to 0.3652, indicating that local refinement improves fine-grained alignment between body parts and objects. Finally, integrating PGTE leads to a further boost of +1.83%, confirming its effectiveness in enriching texture details by the part-guided mechanism. Notably, the full model achieves the highest CLIP score (0.3835), the highest R-Contact (53.7%) and the lowest R-Collision (13.6%), surpassing all individual or partial combinations. This consistent improvement across components demonstrates the synergistic effect among AAS, PALR and PGTE.
@@ -630,6 +886,43 @@
         <p class="extension-copy">
           Since the core of our method lies in the assembly of humans and objects, AssembledHOI can be naturally extended to enable zero-shot generation of human-human interactions. Our method achieves generalization by disentangling structural components, e.g. pose from an object, allowing the text-guided assembly of novel interactions among unseen characters. As shown in above, we generate scenes of interactions such as “Batman and Iron Man shaking hands” or “Spider-Man and Captain America waving”. These results demonstrate the strong compositional generalization ability of our framework, where new interactions are synthesized by recombining learned components based on text prompts.
         </p>
+
+        <div class="user-study-block">
+          <h3 class="comparison-subtitle">User Study</h3>
+          <div class="supp-table-wrap">
+            <table class="supp-table user-study-table">
+              <thead>
+                <tr>
+                  <th>Metric</th>
+                  <th>DreamFusion</th>
+                  <th>Magic3D</th>
+                  <th>TextMesh</th>
+                  <th>InterFusion</th>
+                  <th>DreamHOI</th>
+                  <th class="ours-column">Ours</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>SA ↑</td><td>6.9 ± 0.5</td><td>6.7 ± 0.8</td><td>6.4 ± 0.9</td><td>7.0 ± 1.0</td><td>7.2 ± 0.7</td><td class="ours-column">8.9 ± 0.5*</td></tr>
+                <tr><td>PP ↑</td><td>6.7 ± 0.9</td><td>6.5 ± 1.0</td><td>6.2 ± 1.2</td><td>7.0 ± 1.3</td><td>6.8 ± 1.4</td><td class="ours-column">8.6 ± 0.6*</td></tr>
+                <tr><td>IN ↑</td><td>6.6 ± 0.6</td><td>6.3 ± 0.8</td><td>6.1 ± 1.1</td><td>6.5 ± 1.5</td><td>6.8 ± 1.2</td><td class="ours-column">8.5 ± 0.8*</td></tr>
+                <tr><td>TF ↑</td><td>6.4 ± 0.4</td><td>6.5 ± 0.6</td><td>6.6 ± 0.5</td><td>6.8 ± 0.4</td><td>6.0 ± 1.3</td><td class="ours-column">9.0 ± 0.3*</td></tr>
+                <tr><td>OP ↑</td><td>6.8 ± 0.5</td><td>6.6 ± 0.6</td><td>6.4 ± 0.7</td><td>7.1 ± 0.5</td><td>7.0 ± 0.6</td><td class="ours-column">8.9 ± 0.3*</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="table-description">We conducted a controlled user study with 30 participants who had basic familiarity with 3D visualization. Each participant evaluated 10 human-object interaction scenes presented as randomized, anonymized video results and rated them on a 10-point Likert scale. SA, PP, IN, TF and OP denote Semantic Alignment, Physical Plausibility, Interaction Naturalness, Texture Fidelity and Overall Preference, respectively. * indicates statistical significance at p &lt; 0.01 compared with all other methods.</p>
+        </div>
+
+        <div class="limitation-block">
+          <h3 class="comparison-subtitle">Limitation</h3>
+          <div class="extension-video-grid" id="limitationVideoGrid">
+            <div class="video-status">Loading limitation videos…</div>
+          </div>
+          <div class="limitation-copy">
+            <p>Although AssembledHOI demonstrates strong performance in generating physically plausible and texture-faithful 3D human-object interactions, several limitations remain. For large objects such as the grand piano, the broad spatial extent requires more local and partially overlapping views during part-guided refinement, increasing cross-view texture uncertainty and potentially producing incomplete or inconsistent surface appearance. In the tub-chair example, the lateral regions of the legs are occluded by the arms and the seat structure during multi-view texture optimization; as a result, the optimized leg regions may incorrectly inherit appearance characteristics from the chair surface and visually blend into the surrounding seat. These cases highlight the inherent difficulty of reconstructing fine human details under severe occlusion and ambiguous human-object boundaries. More broadly, because our framework operates in a zero-shot setting without abundant paired text–3D training data, it still lags behind supervised methods in geometric and textural fidelity. Furthermore, the current method focuses on static 3D HOI synthesis and does not model temporal dynamics; extending it toward 4D HOI generation with temporal information remains an important direction for future work.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -688,8 +981,8 @@
         "static/videos/sitting_on_a_slipper_chair.mp4",
         "static/videos/sitting_on_a_swivel_chair.mp4",
         "static/videos/sitting_on_a_bench.mp4",
-        "static/videos/sitting_on_a_bar_chair.mp4",
         "static/videos/sitting_on_a_sofa.mp4",
+        "static/videos/sitting_on_a_bar_chair.mp4",
         "static/videos/sitting_on_a_ball.mp4",
         // Riding interactions
         "static/videos/riding_a_motorcycle.mp4",
@@ -705,6 +998,11 @@
       extensionVideos: [
         "static/videos/wave.mp4",
         "static/videos/shaking_hand.mp4"
+      ],
+      // Failure cases shown in the limitation section.
+      limitationVideos: [
+        "static/limitation/playing_the_piano.mp4",
+        "static/limitation/sitting_on_a_tub_chair.mp4"
       ]
     };
 
@@ -972,8 +1270,10 @@
     async function loadVideos() {
       const mainGrid = document.getElementById("videoGrid");
       const extensionGrid = document.getElementById("extensionVideoGrid");
+      const limitationGrid = document.getElementById("limitationVideoGrid");
       mainGrid.innerHTML = "";
       extensionGrid.innerHTML = "";
+      limitationGrid.innerHTML = "";
 
       if (!ASSETS.mainVideos || ASSETS.mainVideos.length === 0) {
         mainGrid.innerHTML = '<div class="video-status">请在ASSETS配置主结果视频路径</div>';
@@ -985,6 +1285,12 @@
         extensionGrid.innerHTML = '<div class="video-status">请配置拓展视频路径</div>';
       } else {
         ASSETS.extensionVideos.forEach(entry => extensionGrid.appendChild(createVideoItem(entry)));
+      }
+
+      if (!ASSETS.limitationVideos || ASSETS.limitationVideos.length === 0) {
+        limitationGrid.innerHTML = '<div class="video-status">请配置局限性视频路径</div>';
+      } else {
+        ASSETS.limitationVideos.forEach(entry => limitationGrid.appendChild(createVideoItem(entry)));
       }
       await synchronizeVideos();
     }
